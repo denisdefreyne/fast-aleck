@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #include <ultrapants/ultrapants.h>
 
@@ -43,18 +44,17 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	// DEBUG
-	puts ("*** INPUT:");
-	fputs(in, stdout);
-
 	// Ultrapantsize
 	// FIXME *2 is not enough
+	struct timeval tp1, tp2;
 	char *out = malloc(stat.st_size*2);
 	out[0] = '\0';
+    gettimeofday(&tp1, NULL);
 	ultrapants(in, out);
+    gettimeofday(&tp2, NULL);
 
-	// DEBUG
-	puts ("\n*** OUTPUT:");
+	// Write
+	fprintf(stderr, "done in %li.%06is\n", tp2.tv_sec - tp1.tv_sec, tp2.tv_usec - tp1.tv_usec);
 	fputs(out, stdout);
 
 	return 0;
