@@ -9,7 +9,7 @@ add_definitions(-std=gnu99 -Wall -Wextra -Wno-missing-braces -Wno-unused-functio
 set(
 	SOURCES
 	./src/ultrapants/ultrapants.c
-	./src/ultrapants-test/ultrapants-test.c
+	./src/ultrapants/ultrapants-main.c
 )
 
 add_executable(ultrapants ${SOURCES})
