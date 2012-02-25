@@ -1,1 +1,10 @@
-Hello... I am Denis. An example interval is [4..8]. This was--or is, rather---an em-dash test.
+Hello... I am Denis. An example interval is [4..8].
+This was--or is, rather---an em-dash test.
+"Foo", he said.
+'Foo', he said.
+"Foo," he said.
+'Foo,' he said.
+"It's a fine foo."
+'It's a fine foo.'
+Denis' book.
+People's books.
