@@ -45,9 +45,11 @@ int main(int argc, char **argv)
 	}
 
 	// Ultrapantsize
+	ultrapants_config config;
+	config.wrap_amps = 1;
 	struct timeval tp1, tp2;
 	gettimeofday(&tp1, NULL);
-	char *out = ultrapants(in, stat.st_size);
+	char *out = ultrapants(config, in, stat.st_size);
 	gettimeofday(&tp2, NULL);
 
 	// Write

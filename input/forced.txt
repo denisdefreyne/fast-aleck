@@ -11,3 +11,4 @@ People's books.
 ("Why?" she thought.)
 ('Why?' she thought.)
 <img title="Something... awesome--I think">
+This & that. This &amp; that. Four &lt; Five.

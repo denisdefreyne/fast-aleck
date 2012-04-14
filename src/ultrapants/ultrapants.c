@@ -1,7 +1,8 @@
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
-typedef char _up_bool;
+#include <ultrapants/ultrapants.h>
 
 enum _up_state
 {
@@ -69,20 +70,29 @@ static size_t _up_write_double_quote_end(char *out)
 	return 3;
 }
 
-static _up_bool _up_should_open_quote(char in)
+static size_t _up_write_wrapped_amp(char *out)
+{
+	char *s = "<span class=\"amp\">&amp;</span>";
+	memcpy(out, s, 30);
+	return 30;
+}
+
+static up_bool _up_should_open_quote(char in)
 {
 	return in == '(' || isspace(in);
 }
 
-char *ultrapants(char *a_in, size_t a_in_size)
+char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 {
 	enum _up_state state = _up_state_start;
 
 	size_t out_size = (size_t)((float)a_in_size * 1.2);
 	char *out_start = malloc(out_size);
-	char *out = out_start;
+	char *out       = out_start;
 
-	char *in  = a_in;
+	char *in_start = a_in;
+	char *in       = a_in;
+
 	for (; *in; ++in)
 	{
 		if (out - out_start >= out_size - 3)
@@ -133,6 +143,16 @@ char *ultrapants(char *a_in, size_t a_in_size)
 		{
 			*out++ = *in;
 			state = _up_state_tag;
+		}
+		else if (*in == '&' && a_config.wrap_amps)
+		{
+			if ((in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
+			{
+				in += 4;
+				out += _up_write_wrapped_amp(out);
+			}
+			else
+				*out++ = *in;
 		}
 		else
 			*out++ = *in;
