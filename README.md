@@ -22,4 +22,3 @@ To do
 -----
 
 * Widon't
-* Ignore pre/code/tt/...
