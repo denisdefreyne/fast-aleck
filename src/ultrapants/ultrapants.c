@@ -74,14 +74,30 @@ static _up_bool _up_should_open_quote(char in)
 	return in == '(' || isspace(in);
 }
 
-void ultrapants(char *a_in, char *a_out)
+char *ultrapants(char *a_in, size_t a_in_size)
 {
 	enum _up_state state = _up_state_start;
 
+	size_t out_size = (size_t)((float)a_in_size * 1.2);
+	char *out_start = malloc(out_size);
+	char *out = out_start;
+
 	char *in  = a_in;
-	char *out = a_out;
 	for (; *in; ++in)
 	{
+		if (out - out_start >= out_size - 3)
+		{
+			char *out_start_old = out_start;
+			out_size = (out_size + 3) * 2;
+			out_start = realloc(out_start, out_size);
+			if (!out_start)
+			{
+				free(out_start_old);
+				return NULL;
+			}
+			out = out_start + (out - out_start_old);
+		}
+
 		switch (state)
 		{
 			case _up_state_start:     goto UP_STATE_START;     break;
@@ -195,4 +211,6 @@ void ultrapants(char *a_in, char *a_out)
 			state = _up_state_tag;
 		continue;
 	}
+
+	return out_start;
 }

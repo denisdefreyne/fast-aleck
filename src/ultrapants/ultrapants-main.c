@@ -45,12 +45,9 @@ int main(int argc, char **argv)
 	}
 
 	// Ultrapantsize
-	// FIXME *2 is not enough
 	struct timeval tp1, tp2;
-	char *out = malloc(stat.st_size*2);
-	out[0] = '\0';
 	gettimeofday(&tp1, NULL);
-	ultrapants(in, out);
+	char *out = ultrapants(in, stat.st_size);
 	gettimeofday(&tp2, NULL);
 
 	// Write
