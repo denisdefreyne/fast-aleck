@@ -49,9 +49,9 @@ int main(int argc, char **argv)
 	struct timeval tp1, tp2;
 	char *out = malloc(stat.st_size*2);
 	out[0] = '\0';
-    gettimeofday(&tp1, NULL);
+	gettimeofday(&tp1, NULL);
 	ultrapants(in, out);
-    gettimeofday(&tp2, NULL);
+	gettimeofday(&tp2, NULL);
 
 	// Write
 	fprintf(stderr, "done in %li.%06is\n", tp2.tv_sec - tp1.tv_sec, tp2.tv_usec - tp1.tv_usec);
