@@ -7,7 +7,10 @@ enum _up_state
 	_up_state_dot,
 	_up_state_dotdot,
 	_up_state_dash,
-	_up_state_dashdash
+	_up_state_dashdash,
+	_up_state_tag,
+	_up_state_attr_squo,
+	_up_state_attr_dquo
 };
 
 static size_t _up_write_ellipsis(char *out)
@@ -74,11 +77,14 @@ void ultrapants(char *a_in, char *a_out)
 	{
 		switch (state)
 		{
-			case _up_state_start:    goto UP_STATE_START;    break;
-			case _up_state_dot:      goto UP_STATE_DOT;      break;
-			case _up_state_dotdot:   goto UP_STATE_DOTDOT;   break;
-			case _up_state_dash:     goto UP_STATE_DASH;     break;
-			case _up_state_dashdash: goto UP_STATE_DASHDASH; break;
+			case _up_state_start:     goto UP_STATE_START;     break;
+			case _up_state_dot:       goto UP_STATE_DOT;       break;
+			case _up_state_dotdot:    goto UP_STATE_DOTDOT;    break;
+			case _up_state_dash:      goto UP_STATE_DASH;      break;
+			case _up_state_dashdash:  goto UP_STATE_DASHDASH;  break;
+			case _up_state_tag:       goto UP_STATE_TAG;       break;
+			case _up_state_attr_squo: goto UP_STATE_ATTR_SQUO; break;
+			case _up_state_attr_dquo: goto UP_STATE_ATTR_DQUO; break;
 		}
 
 	UP_STATE_START:
@@ -99,6 +105,11 @@ void ultrapants(char *a_in, char *a_out)
 				out += _up_write_double_quote_start(out);
 			else
 				out += _up_write_double_quote_end(out);
+		}
+		else if (*in == '<')
+		{
+			*out++ = *in;
+			state = _up_state_tag;
 		}
 		else
 			*out++ = *in;
@@ -153,6 +164,28 @@ void ultrapants(char *a_in, char *a_out)
 			out += _up_write_mdash(out);
 			state = _up_state_start;
 		}
+		continue;
+
+	UP_STATE_TAG:
+		*out++ = *in;
+		if (*in == '>')
+			state = _up_state_start;
+		else if (*in == '\'')
+			state = _up_state_attr_squo;
+		else if (*in == '"')
+			state = _up_state_attr_dquo;
+		continue;
+
+	UP_STATE_ATTR_SQUO:
+		*out++ = *in;
+		if (*in == '\'')
+			state = _up_state_tag;
+		continue;
+
+	UP_STATE_ATTR_DQUO:
+		*out++ = *in;
+		if (*in == '"')
+			state = _up_state_tag;
 		continue;
 	}
 }
