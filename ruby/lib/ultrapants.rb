@@ -4,6 +4,9 @@
 require 'ffi'
 
 module Ultrapants
+
+  VERSION = '0.1'
+
   extend FFI::Library
 
   ffi_lib FFI::Library::LIBC
