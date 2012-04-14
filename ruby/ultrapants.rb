@@ -8,8 +8,15 @@ module Ultrapants
 
   ffi_lib 'ultrapants'
 
-  attach_function :ultrapants, [ :string, :int ], :string
+  attach_function :_ultrapants, :ultrapants, [ :string, :int ], :string
+
+  def self.process(t)
+    _ultrapants(t, t.size)
+  end
+
 end
+
+####################
 
 input = <<EOS
 <p>Hello... I am Denis--Denis Defreyne.</p>
@@ -17,4 +24,4 @@ input = <<EOS
 <img src="blah--2.png" title="Something... blahhy">
 EOS
 
-puts Ultrapants.ultrapants(input, input.size)
+puts Ultrapants.process(input)
