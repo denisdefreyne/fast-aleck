@@ -1,6 +1,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+typedef char _up_bool;
+
 enum _up_state
 {
 	_up_state_start,
@@ -67,6 +69,11 @@ static size_t _up_write_double_quote_end(char *out)
 	return 3;
 }
 
+static _up_bool _up_should_open_quote(char in)
+{
+	return in == '(' || isspace(in);
+}
+
 void ultrapants(char *a_in, char *a_out)
 {
 	enum _up_state state = _up_state_start;
@@ -94,14 +101,14 @@ void ultrapants(char *a_in, char *a_out)
 			state = _up_state_dash;
 		else if (*in == '\'')
 		{
-			if (in > a_in && isspace(*(in-1)))
+			if (in > a_in && _up_should_open_quote(*(in-1)))
 				out += _up_write_single_quote_start(out);
 			else
 				out += _up_write_single_quote_end(out);
 		}
 		else if (*in == '"')
 		{
-			if (in > a_in && isspace(*(in-1)))
+			if (in > a_in && _up_should_open_quote(*(in-1)))
 				out += _up_write_double_quote_start(out);
 			else
 				out += _up_write_double_quote_end(out);

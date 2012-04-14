@@ -8,3 +8,6 @@ This was--or is, rather---an em-dash test.
 'It's a fine foo.'
 Denis' book.
 People's books.
+("Why?" she thought.)
+('Why?' she thought.)
+<img title="Something... awesome--I think">
