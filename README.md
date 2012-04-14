@@ -14,6 +14,14 @@ Features
 * ---
 * ""
 * ''
-* Widon't (not yet implemented)
-* Ignore text in XML/HTML tags
-* Ignore pre/code/tt/... (not yet implemented)
+* Widon't
+* Ignores text in XML/HTML tags
+* Ignores pre/code/tt/...
+
+To do
+-----
+
+* Widon't
+* Ignore pre/code/tt/...
+* Ignore stuff between `<!CDATA[` and `]]>`
+* Prevent buffer overflows
