@@ -94,6 +94,14 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 	char *in_start = a_in;
 	char *in       = a_in;
 
+	up_bool off       = 0;
+	up_bool in_code   = 0;
+	up_bool in_kbd    = 0;
+	up_bool in_pre    = 0;
+	up_bool in_script = 0;
+
+	up_bool end_tag_slash_detected = 0;
+
 	for (; *in; ++in)
 	{
 		if (out - out_start >= out_size - 7)
@@ -123,18 +131,18 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 		}
 
 	UP_STATE_START:
-		if (*in == '.')
+		if (*in == '.' && !off)
 			state = _up_state_dot;
-		else if (*in == '-')
+		else if (*in == '-' && !off)
 			state = _up_state_dash;
-		else if (*in == '\'')
+		else if (*in == '\'' && !off)
 		{
 			if (in > a_in && _up_should_open_quote(*(in-1)))
 				out += _up_write_single_quote_start(out);
 			else
 				out += _up_write_single_quote_end(out);
 		}
-		else if (*in == '"')
+		else if (*in == '"' && !off)
 		{
 			if (in > a_in && _up_should_open_quote(*(in-1)))
 				out += _up_write_double_quote_start(out);
@@ -146,15 +154,10 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 			*out++ = *in;
 			state = _up_state_tag;
 		}
-		else if (*in == '&' && a_config.wrap_amps)
+		else if (*in == '&' && !off && a_config.wrap_amps && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
 		{
-			if ((in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
-			{
-				in += 4;
-				out += _up_write_wrapped_amp(out);
-			}
-			else
-				*out++ = *in;
+			in += 4;
+			out += _up_write_wrapped_amp(out);
 		}
 		else
 			*out++ = *in;
@@ -214,7 +217,10 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 	UP_STATE_TAG:
 		*out++ = *in;
 		if (*in == '>')
+		{
+			end_tag_slash_detected = 0;
 			state = _up_state_start;
+		}
 		else if (*in == '\'')
 			state = _up_state_attr_squo;
 		else if (*in == '"')
@@ -225,6 +231,82 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 			memcpy(out, "[CDATA[", 7);
 			out += 7;
 			state = _up_state_cdata;
+		}
+		else if (*in == '/')
+		{
+			end_tag_slash_detected = 1;
+		}
+		// code
+		else if (*in == 'c' && (in + 3 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "ode", 3))
+		{
+			in += 3;
+			memcpy(out, "ode", 3);
+			out += 3;
+
+			if (end_tag_slash_detected)
+			{
+				in_kbd = 0;
+				off    = in_code || in_kbd || in_pre || in_script;
+			}
+			else
+			{
+				in_kbd = 1;
+				off    = 1;
+			}
+		}
+		// kbd
+		else if (*in == 'k' && (in + 2 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "bd", 2))
+		{
+			in += 2;
+			memcpy(out, "bd", 2);
+			out += 2;
+
+			if (end_tag_slash_detected)
+			{
+				in_kbd = 0;
+				off    = in_code || in_kbd || in_pre || in_script;
+			}
+			else
+			{
+				in_kbd = 1;
+				off    = 1;
+			}
+		}
+		// pre
+		else if (*in == 'p' && (in + 2 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "re", 2))
+		{
+			in += 2;
+			memcpy(out, "re", 2);
+			out += 2;
+
+			if (end_tag_slash_detected)
+			{
+				in_kbd = 0;
+				off    = in_code || in_kbd || in_pre || in_script;
+			}
+			else
+			{
+				in_kbd = 1;
+				off    = 1;
+			}
+		}
+		// script
+		else if (*in == 's' && (in + 5 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "cript", 5))
+		{
+			in += 5;
+			memcpy(out, "cript", 5);
+			out += 5;
+
+			if (end_tag_slash_detected)
+			{
+				in_kbd = 0;
+				off    = in_code || in_kbd || in_pre || in_script;
+			}
+			else
+			{
+				in_kbd = 1;
+				off    = 1;
+			}
 		}
 		continue;
 

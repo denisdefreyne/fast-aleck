@@ -13,3 +13,7 @@ People's books.
 <img title="Something... awesome--I think">
 This & that. This &amp; that. Four &lt; Five.
 This... is CDATA! <![CDATA[This... really is--honestly!]]>. Whew... cdata's over.
+Pretty this here--right here. <code>But not in there... please!</code> But afterwards... yes, please.
+Pretty this here--right here. <kbd>But not in there... please!</kbd> But afterwards... yes, please.
+Pretty this here--right here. <pre>But not in there... please!</pre> But afterwards... yes, please.
+Pretty this here--right here. <script>But not in there... please!</script> But afterwards... yes, please.
