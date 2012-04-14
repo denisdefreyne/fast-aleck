@@ -1,24 +1,30 @@
-ultrapants
+Ultrapants
 ==========
 
-Ultrapants is a re-implementation of [Smartypants](sp), [Widon't](w), etc. with a focus on speed. Because of this, it is implemented in C as a FSM, which gives us O(n) complexity.
+Ultrapants is a tool for making text look smarter by using proper Unicode characters. For example, ... becomes … (`&hellip;`) and -- becomes — (`&mdash;`). Its goal is to be the fastest text cleaning tool out there.
 
-[sp]: http://daringfireball.net/projects/smartypants/
-[w]: http://www.shauninman.com/archive/2007/01/03/widont_2_1_wordpress_plugin
-
-Features
---------
-
-* ...
-* --
-* ---
-* ""
-* ''
-* Widon't
-* Ignores text in XML/HTML tags
-* Ignores text inside `code`, `kbd`, `pre` and `script` elements
+Despite its name, it is not intended to be API-compatible with [Smartypants](http://daringfireball.net/projects/smartypants/). It is not, and likely never will be, customisable like Smartypants. Perhaps there never will be any options at all. It will also not do just what Smartypants does; its aim is to be a replacement for everything [Typogrify](http://code.google.com/p/typogrify/) does.
 
 To do
 -----
 
+* Implement remaining features listed below
+* Get a better name
+
+Features
+--------
+
+* ... → …
+* -- → —
+* --- → —
+* '' → ‘’
+* "" → “”
+* Skips text inside `code`, `kbd`, `pre` and `script` elements
+* Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
+
+Not yet implemented but coming up:
+
 * Widon't
+* class="dquo" for double quotes
+* class="quo" for single quotes
+* class="caps" for multiple capital letters
