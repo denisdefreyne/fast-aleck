@@ -12,6 +12,7 @@ enum _up_state
 	_up_state_dash,
 	_up_state_dashdash,
 	_up_state_tag,
+	_up_state_cdata,
 	_up_state_attr_squo,
 	_up_state_attr_dquo
 };
@@ -95,10 +96,10 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 
 	for (; *in; ++in)
 	{
-		if (out - out_start >= out_size - 3)
+		if (out - out_start >= out_size - 7)
 		{
 			char *out_start_old = out_start;
-			out_size = (out_size + 3) * 2;
+			out_size = (out_size + 7) * 2;
 			out_start = realloc(out_start, out_size);
 			if (!out_start)
 			{
@@ -116,6 +117,7 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 			case _up_state_dash:      goto UP_STATE_DASH;      break;
 			case _up_state_dashdash:  goto UP_STATE_DASHDASH;  break;
 			case _up_state_tag:       goto UP_STATE_TAG;       break;
+			case _up_state_cdata:     goto UP_STATE_CDATA;     break;
 			case _up_state_attr_squo: goto UP_STATE_ATTR_SQUO; break;
 			case _up_state_attr_dquo: goto UP_STATE_ATTR_DQUO; break;
 		}
@@ -217,6 +219,24 @@ char *ultrapants(ultrapants_config a_config, char *a_in, size_t a_in_size)
 			state = _up_state_attr_squo;
 		else if (*in == '"')
 			state = _up_state_attr_dquo;
+		else if (*in == '!' && (in + 7 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "[CDATA[", 7))
+		{
+			in += 7;
+			memcpy(out, "[CDATA[", 7);
+			out += 7;
+			state = _up_state_cdata;
+		}
+		continue;
+
+	UP_STATE_CDATA:
+		*out++ = *in;
+		if (*in == ']' && (in + 2 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "]>", 2))
+		{
+			in += 2;
+			memcpy(out, "]>", 2);
+			out += 2;
+			state = _up_state_start;
+		}
 		continue;
 
 	UP_STATE_ATTR_SQUO:

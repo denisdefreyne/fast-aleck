@@ -12,3 +12,4 @@ People's books.
 ('Why?' she thought.)
 <img title="Something... awesome--I think">
 This & that. This &amp; that. Four &lt; Five.
+This... is CDATA! <![CDATA[This... really is--honestly!]]>. Whew... cdata's over.

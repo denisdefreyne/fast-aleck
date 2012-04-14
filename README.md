@@ -23,4 +23,3 @@ To do
 
 * Widon't
 * Ignore pre/code/tt/...
-* Ignore stuff between `<!CDATA[` and `]]>`
