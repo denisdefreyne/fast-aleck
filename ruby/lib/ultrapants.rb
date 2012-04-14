@@ -20,13 +20,3 @@ module Ultrapants
   end
 
 end
-
-####################
-
-input = <<EOS
-<p>Hello... I am Denis--Denis Defreyne.</p>
-
-<img src="blah--2.png" title="Something... blahhy">
-EOS
-
-puts Ultrapants.process(input)
