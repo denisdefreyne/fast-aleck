@@ -16,7 +16,7 @@ Features
 * ''
 * Widon't
 * Ignores text in XML/HTML tags
-* Ignores pre/code/tt/...
+* Ignores text inside `code`, `kbd`, `pre` and `script` elements
 
 To do
 -----
