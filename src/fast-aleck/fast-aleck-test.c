@@ -4,7 +4,6 @@
 
 #include <fast-aleck/fast-aleck.h>
 
-int tests_count = 4;
 char *tests[] = {
 	"I am a simple sentence.",
 	"I am a simple sentence.",
@@ -17,7 +16,20 @@ char *tests[] = {
 
 	"This sentence ends in two periods..",
 	"This sentence ends in two periods..",
+
+	"This sentence ends in three periods...",
+	"This sentence ends in three periods…",
+
+	"Weird! This sentence ends in a dash-",
+	"Weird! This sentence ends in a dash-",
+
+	"Weird! This sentence ends in two dashes--",
+	"Weird! This sentence ends in two dashes—",
+
+	"Weird! This sentence ends in three dashes---",
+	"Weird! This sentence ends in three dashes—",
 };
+int tests_count = 8;
 
 int main(void)
 {

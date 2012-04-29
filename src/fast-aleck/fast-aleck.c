@@ -161,8 +161,7 @@ static inline void _fa_finish(char *a_out, enum _fa_state a_state)
 			break;
 
 		case _fa_state_dashdash:
-			*a_out++ = '-';
-			*a_out++ = '-';
+			a_out += _fa_write_mdash(a_out);
 			break;
 
 		case _fa_state_tag:
