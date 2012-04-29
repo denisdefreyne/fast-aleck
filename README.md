@@ -9,7 +9,6 @@ To do
 -----
 
 * Implement remaining features listed below
-* Get a better name
 
 Features
 --------
