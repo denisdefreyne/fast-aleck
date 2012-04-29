@@ -1,0 +1,4 @@
+language: ruby
+script: "cc -I include src/fast-aleck/fast-aleck.c src/fast-aleck/fast-aleck-test.c -o fast-aleck-test && ./fast-aleck-test"
+notifications:
+  irc: "chat.freenode.net#nanoc"
