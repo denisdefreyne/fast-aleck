@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+$LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
+
+require 'fast-aleck'
+
+config = FastAleck::Config.new
+$stdout.puts(FastAleck.process(config, $stdin.read))

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(ultrapants)
+project(fast-aleck)
 
 include_directories(include)
 
@@ -8,8 +8,8 @@ add_definitions(-std=gnu99 -Wall -Wextra -Wno-missing-braces -Wno-unused-functio
 
 set(
 	SOURCES
-	./src/ultrapants/ultrapants.c
-	./src/ultrapants/ultrapants-main.c
+	./src/fast-aleck/fast-aleck.c
+	./src/fast-aleck/fast-aleck-main.c
 )
 
-add_executable(ultrapants ${SOURCES})
+add_executable(fast-aleck ${SOURCES})

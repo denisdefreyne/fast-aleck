@@ -1,18 +1,18 @@
 # encoding: utf-8
 
-require 'ultrapants'
+require 'fast-aleck'
 require 'nanoc'
 
-module Ultrapants
+module FastAleck
   class NanocFilter < ::Nanoc::Filter
 
-    identifier :ultrapants
+    identifier :fast_aleck
 
     def run(content, params={})
-      config = Ultrapants::Config.new
+      config = FastAleck::Config.new
       config[:wrap_amps] = 1
 
-      Ultrapants.process(config, content)
+      FastAleck.process(config, content)
     end
 
   end

@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 
-#include <ultrapants/ultrapants.h>
+#include <fast-aleck/fast-aleck.h>
 
 int main(int argc, char **argv)
 {
@@ -44,12 +44,12 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	// Ultrapantsize
-	ultrapants_config config;
+	// Fast Aleckize
+	fast_aleck_config config;
 	config.wrap_amps = 1;
 	struct timeval tp1, tp2;
 	gettimeofday(&tp1, NULL);
-	char *out = ultrapants(config, in, stat.st_size);
+	char *out = fast_aleck(config, in, stat.st_size);
 	gettimeofday(&tp2, NULL);
 
 	// Write
