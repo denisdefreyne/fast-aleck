@@ -4,63 +4,73 @@
 
 #include <fast-aleck/fast-aleck.h>
 
-char *tests[] = {
-	"I am a simple sentence.",
-	"I am a simple sentence.",
-
-	"I am... a sentence with an ellipsis!",
-	"I am… a sentence with an ellipsis!",
-
-	"I am a sentence--really---with two dashes!",
-	"I am a sentence—really—with two dashes!",
-
-	"This sentence ends in two periods..",
-	"This sentence ends in two periods..",
-
-	"This sentence ends in three periods...",
-	"This sentence ends in three periods…",
-
-	"Weird! This sentence ends in a dash-",
-	"Weird! This sentence ends in a dash-",
-
-	"Weird! This sentence ends in two dashes--",
-	"Weird! This sentence ends in two dashes—",
-
-	"Weird! This sentence ends in three dashes---",
-	"Weird! This sentence ends in three dashes—",
+struct fast_aleck_test_results {
+	int passes;
+	int fails;
 };
-int tests_count = 8;
+
+void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char *a_expected_output);
 
 int main(void)
 {
-	int passes = 0, fails = 0;
+	struct fast_aleck_test_results res;
+	res.passes = 0;
+	res.fails  = 0;
 
-	for (int i = 0; i < tests_count; ++i)
+	fast_aleck_test(&res,
+		"I am a simple sentence.",
+		"I am a simple sentence.");
+
+	fast_aleck_test(&res,
+		"I am... a sentence with an ellipsis!",
+		"I am… a sentence with an ellipsis!");
+
+	fast_aleck_test(&res,
+		"I am a sentence--really---with two dashes!",
+		"I am a sentence—really—with two dashes!");
+
+	fast_aleck_test(&res,
+		"This sentence ends in two periods..",
+		"This sentence ends in two periods..");
+
+	fast_aleck_test(&res,
+		"This sentence ends in three periods...",
+		"This sentence ends in three periods…");
+
+	fast_aleck_test(&res,
+		"Weird! This sentence ends in a dash-",
+		"Weird! This sentence ends in a dash-");
+
+	fast_aleck_test(&res,
+		"Weird! This sentence ends in two dashes--",
+		"Weird! This sentence ends in two dashes—");
+
+	fast_aleck_test(&res,
+		"Weird! This sentence ends in three dashes---",
+		"Weird! This sentence ends in three dashes—");
+
+	fprintf(stderr, "%i tests with %i failures\n", res.passes+res.fails, res.fails);
+}
+
+void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char *a_expected_output)
+{
+	fast_aleck_config config;
+	config.wrap_amps   = 0;
+	config.wrap_quotes = 0;
+	char *actual_output = fast_aleck(config, a_input, strlen(a_input));
+
+	if (0 == strcmp(a_expected_output, actual_output))
 	{
-		char *input    = tests[2*i];
-		char *expected = tests[2*i+1];
-		char *actual   = NULL;
-
-		fast_aleck_config config;
-		actual = fast_aleck(config, input, strlen(input));
-
-		if (0 == strcmp(expected, actual))
-		{
-			++passes;
-			fprintf(stderr, "PASS\n");
-		}
-		else
-		{
-			++fails;
-			fprintf(stderr, "FAIL\n");
-			fprintf(stderr, "  Expected: %s\n", expected);
-			fprintf(stderr, "  Actual:   %s\n", actual);
-		}
-
-		free(actual);
+		++a_res->passes;
+		fprintf(stderr, "PASS\n");
+	}
+	else
+	{
+		++a_res->fails;
+		fprintf(stderr, "FAIL\n");
+		fprintf(stderr, "  Expected: %s\n", a_expected_output);
+		fprintf(stderr, "  Actual:   %s\n", actual_output);
 	}
 
-	fprintf(stderr, "%i tests with %i failures\n", passes+fails, fails);
-
-	return 0;
+	free(actual_output);
 }
