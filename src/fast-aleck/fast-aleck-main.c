@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -9,12 +10,33 @@
 
 int main(int argc, char **argv)
 {
-	int ret;
+	// Parse opts
+	int wrap_amps = 0, wrap_quotes = 0;
+	static struct option longopts[] = {
+		{ "wrap-amps",   no_argument, NULL, 'a' },
+		{ "wrap-quotes", no_argument, NULL, 'q' },
+		{ NULL,          0,           NULL, 0   }
+	};
+	int ch;
+	while ((ch = getopt_long(argc, argv, "aq", longopts, NULL)) != -1)
+		switch (ch) {
+		case 'a':
+			wrap_amps = 1;
+			break;
+		case 'q':
+			wrap_quotes = 1;
+			break;
+		default:
+			fprintf(stderr, "usage: fast-aleck [options] [filename]\n");
+			exit(1);
+	}
+	argc -= optind;
+	argv += optind;
 
 	// Get filename
 	if (argc != 2)
 	{
-		fprintf(stderr, "usage: %s [filename]\n", argv[0]);
+		fprintf(stderr, "usage: fast-aleck [filename]\n");
 		exit(1);
 	}
 	char *filename = argv[1];
@@ -29,7 +51,7 @@ int main(int argc, char **argv)
 
 	// Get size
 	struct stat stat;
-	ret = fstat(fd, &stat);
+	int ret = fstat(fd, &stat);
 	if (-1 == ret)
 	{
 		perror("fstat");
@@ -46,7 +68,8 @@ int main(int argc, char **argv)
 
 	// Fast Aleckize
 	fast_aleck_config config;
-	config.wrap_amps = 1;
+	config.wrap_amps   = wrap_amps;
+	config.wrap_quotes = wrap_quotes;
 	struct timeval tp1, tp2;
 	gettimeofday(&tp1, NULL);
 	char *out = fast_aleck(config, in, stat.st_size);
