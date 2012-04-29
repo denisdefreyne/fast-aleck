@@ -43,12 +43,12 @@ int main(int argc, char **argv)
 	argv += optind;
 
 	// Get filename
-	if (argc != 2)
+	if (argc != 1)
 	{
 		fprintf(stderr, "usage: fast-aleck [options] [filename]\n");
 		exit(1);
 	}
-	char *filename = argv[1];
+	char *filename = argv[0];
 
 	// Open
 	int fd = open(filename, O_RDONLY);
