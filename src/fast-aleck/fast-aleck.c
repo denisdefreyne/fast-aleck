@@ -35,40 +35,100 @@ static inline size_t _fa_write_mdash(char *out)
 	return 3;
 }
 
-static inline size_t _fa_write_single_quote_start(char *out)
+static inline size_t _fa_write_single_quote_start(char *out, fa_bool a_should_wrap)
 {
-	*out++ = 0xE2;
-	*out++ = 0x80;
-	*out++ = 0x98;
+	char *s1 = "<span class=\"quo\">";
+	char *s2 = "</span>";
 
-	return 3;
+	if (a_should_wrap)
+	{
+		memcpy(out, s1, 18);
+		out += 18;
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x98;
+		memcpy(out, s2, 7);
+		return 28;
+	}
+	else
+	{
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x98;
+		return 3;
+	}
 }
 
-static inline size_t _fa_write_single_quote_end(char *out)
+static inline size_t _fa_write_single_quote_end(char *out, fa_bool a_should_wrap)
 {
-	*out++ = 0xE2;
-	*out++ = 0x80;
-	*out++ = 0x99;
+	char *s1 = "<span class=\"quo\">";
+	char *s2 = "</span>";
 
-	return 3;
+	if (a_should_wrap)
+	{
+		memcpy(out, s1, 18);
+		out += 18;
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x99;
+		memcpy(out, s2, 7);
+		return 28;
+	}
+	else
+	{
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x99;
+		return 3;
+	}
 }
 
-static inline size_t _fa_write_double_quote_start(char *out)
+static inline size_t _fa_write_double_quote_start(char *out, fa_bool a_should_wrap)
 {
-	*out++ = 0xE2;
-	*out++ = 0x80;
-	*out++ = 0x9C;
+	char *s1 = "<span class=\"dquo\">";
+	char *s2 = "</span>";
 
-	return 3;
+	if (a_should_wrap)
+	{
+		memcpy(out, s1, 19);
+		out += 19;
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x9C;
+		memcpy(out, s2, 7);
+		return 29;
+	}
+	else
+	{
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x9C;
+		return 3;
+	}
 }
 
-static inline size_t _fa_write_double_quote_end(char *out)
+static inline size_t _fa_write_double_quote_end(char *out, fa_bool a_should_wrap)
 {
-	*out++ = 0xE2;
-	*out++ = 0x80;
-	*out++ = 0x9D;
+	char *s1 = "<span class=\"dquo\">";
+	char *s2 = "</span>";
 
-	return 3;
+	if (a_should_wrap)
+	{
+		memcpy(out, s1, 19);
+		out += 19;
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x9D;
+		memcpy(out, s2, 7);
+		return 29;
+	}
+	else
+	{
+		*out++ = 0xE2;
+		*out++ = 0x80;
+		*out++ = 0x9D;
+		return 3;
+	}
 }
 
 static inline size_t _fa_write_wrapped_amp(char *out)
@@ -138,16 +198,16 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 		else if (*in == '\'' && !off)
 		{
 			if (in > a_in && _fa_should_open_quote(*(in-1)))
-				out += _fa_write_single_quote_start(out);
+				out += _fa_write_single_quote_start(out, a_config.wrap_quotes);
 			else
-				out += _fa_write_single_quote_end(out);
+				out += _fa_write_single_quote_end(out, a_config.wrap_quotes);
 		}
 		else if (*in == '"' && !off)
 		{
 			if (in > a_in && _fa_should_open_quote(*(in-1)))
-				out += _fa_write_double_quote_start(out);
+				out += _fa_write_double_quote_start(out, a_config.wrap_quotes);
 			else
-				out += _fa_write_double_quote_end(out);
+				out += _fa_write_double_quote_end(out, a_config.wrap_quotes);
 		}
 		else if (*in == '<')
 		{

@@ -9,6 +9,7 @@ To do
 -----
 
 * Implement remaining features listed below
+* Add commandline options to the C and Ruby CLI tools
 
 Features
 --------
@@ -20,10 +21,10 @@ Features
 * "" → “”
 * Skips text inside `code`, `kbd`, `pre` and `script` elements
 * Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
+* Optionally wraps `'` in a span with class `quo`
+* Optionally wraps `"` in a span with class `dquo`
 
 Not yet implemented but coming up:
 
 * Widon't
-* class="dquo" for double quotes
-* class="quo" for single quotes
 * class="caps" for multiple capital letters

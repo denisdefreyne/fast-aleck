@@ -13,7 +13,8 @@ module FastAleck
   ffi_lib 'fast-aleck'
 
   class Config < ::FFI::Struct
-    layout :wrap_amps, :char
+    layout :wrap_amps,   :char,
+           :wrap_quotes, :char
   end
 
   attach_function :_fast_aleck, :fast_aleck, [ Config.by_value, :string, :int ], :pointer

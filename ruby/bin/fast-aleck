@@ -6,4 +6,6 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
 require 'fast-aleck'
 
 config = FastAleck::Config.new
+config[:wrap_amps]   = 1
+config[:wrap_quotes] = 1
 $stdout.puts(FastAleck.process(config, $stdin.read))
