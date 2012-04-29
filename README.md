@@ -7,7 +7,6 @@ To do
 -----
 
 * Implement remaining features listed below
-* Add commandline options to the C and Ruby CLI tools
 
 Features
 --------
