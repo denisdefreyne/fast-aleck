@@ -96,6 +96,8 @@ int main(void)
 	fast_aleck_test(&res,
 		"Before... yes. <p>In something else (like p)... yes!</p> After... yes.",
 		"Before… yes. <p>In something else (like p)… yes!</p> After… yes.");
+
+	return (res.fails > 0 ? 1 : 0);
 }
 
 void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char *a_expected_output)
