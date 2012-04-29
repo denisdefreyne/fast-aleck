@@ -5,6 +5,7 @@
 #include <fast-aleck/fast-aleck.h>
 
 struct fast_aleck_test_results {
+	int count;
 	int passes;
 	int fails;
 };
@@ -14,8 +15,11 @@ void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char 
 int main(void)
 {
 	struct fast_aleck_test_results res;
+	res.count  = 0;
 	res.passes = 0;
 	res.fails  = 0;
+
+	fprintf(stdout, "1..%i\n", res.count);
 
 	fast_aleck_test(&res,
 		"I am a simple sentence.",
@@ -92,8 +96,6 @@ int main(void)
 	fast_aleck_test(&res,
 		"Before... yes. <p>In something else (like p)... yes!</p> After... yes.",
 		"Before… yes. <p>In something else (like p)… yes!</p> After… yes.");
-
-	fprintf(stderr, "%i tests with %i failures\n", res.passes+res.fails, res.fails);
 }
 
 void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char *a_expected_output)
@@ -106,15 +108,17 @@ void fast_aleck_test(struct fast_aleck_test_results *a_res, char *a_input, char 
 	if (0 == strcmp(a_expected_output, actual_output))
 	{
 		++a_res->passes;
-		fprintf(stderr, "PASS\n");
+		fprintf(stdout, "ok %i %s\n", a_res->count+1, a_input);
 	}
 	else
 	{
 		++a_res->fails;
-		fprintf(stderr, "FAIL\n");
-		fprintf(stderr, "  Expected: %s\n", a_expected_output);
-		fprintf(stderr, "  Actual:   %s\n", actual_output);
+		fprintf(stdout, "not ok %i %s\n", a_res->count+1, a_input);
+		fprintf(stdout, "  Expected: %s\n", a_expected_output);
+		fprintf(stdout, "  Actual:   %s\n", actual_output);
 	}
+
+	++a_res->count;
 
 	free(actual_output);
 }
