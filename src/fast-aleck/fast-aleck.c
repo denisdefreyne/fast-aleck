@@ -164,10 +164,10 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 
 	for (; *in; ++in)
 	{
-		if (out - out_start >= out_size - 7)
+		if (out - out_start >= out_size - 30)
 		{
 			char *out_start_old = out_start;
-			out_size = (out_size + 7) * 2;
+			out_size = (out_size + 30) * 2;
 			out_start = realloc(out_start, out_size);
 			if (!out_start)
 			{
