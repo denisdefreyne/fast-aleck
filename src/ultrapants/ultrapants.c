@@ -17,7 +17,7 @@ enum _up_state
 	_up_state_attr_dquo
 };
 
-static size_t _up_write_ellipsis(char *out)
+static inline size_t _up_write_ellipsis(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -26,7 +26,7 @@ static size_t _up_write_ellipsis(char *out)
 	return 3;
 }
 
-static size_t _up_write_mdash(char *out)
+static inline size_t _up_write_mdash(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -35,7 +35,7 @@ static size_t _up_write_mdash(char *out)
 	return 3;
 }
 
-static size_t _up_write_single_quote_start(char *out)
+static inline size_t _up_write_single_quote_start(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -44,7 +44,7 @@ static size_t _up_write_single_quote_start(char *out)
 	return 3;
 }
 
-static size_t _up_write_single_quote_end(char *out)
+static inline size_t _up_write_single_quote_end(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -53,7 +53,7 @@ static size_t _up_write_single_quote_end(char *out)
 	return 3;
 }
 
-static size_t _up_write_double_quote_start(char *out)
+static inline size_t _up_write_double_quote_start(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -62,7 +62,7 @@ static size_t _up_write_double_quote_start(char *out)
 	return 3;
 }
 
-static size_t _up_write_double_quote_end(char *out)
+static inline size_t _up_write_double_quote_end(char *out)
 {
 	*out++ = 0xE2;
 	*out++ = 0x80;
@@ -71,14 +71,14 @@ static size_t _up_write_double_quote_end(char *out)
 	return 3;
 }
 
-static size_t _up_write_wrapped_amp(char *out)
+static inline size_t _up_write_wrapped_amp(char *out)
 {
 	char *s = "<span class=\"amp\">&amp;</span>";
 	memcpy(out, s, 30);
 	return 30;
 }
 
-static up_bool _up_should_open_quote(char in)
+static inline up_bool _up_should_open_quote(char in)
 {
 	return in == '(' || isspace(in);
 }
