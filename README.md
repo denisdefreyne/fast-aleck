@@ -8,6 +8,7 @@ To do
 
 * Implement remaining features listed below
 * Add commandline options to the C and Ruby CLI tools
+* Add support for UTF-8 input
 
 Features
 --------
