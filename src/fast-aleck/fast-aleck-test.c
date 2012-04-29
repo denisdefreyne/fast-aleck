@@ -61,6 +61,38 @@ int main(void)
 		"\"Hello\", she said. \"Hello,\" she said. \"Huh...\" she mumbled.",
 		"“Hello”, she said. “Hello,” she said. “Huh…” she mumbled.");
 
+	fast_aleck_test(&res,
+		"'That's mine!', she said. \"That's mine!\", she said.",
+		"‘That’s mine!’, she said. “That’s mine!”, she said.");
+
+	fast_aleck_test(&res,
+		"(\"Amazing!\" she thought.) ('Amazing!' she thought.)",
+		"(“Amazing!” she thought.) (‘Amazing!’ she thought.)");
+
+	fast_aleck_test(&res,
+		"Before... yes. <img alt=\"During... no.\"> After... yes.",
+		"Before… yes. <img alt=\"During... no.\"> After… yes.");
+
+	fast_aleck_test(&res,
+		"Before... yes. <script>In script... no.</script> After... yes.",
+		"Before… yes. <script>In script... no.</script> After… yes.");
+
+	fast_aleck_test(&res,
+		"Before... yes. <pre>In pre... no.</pre> After... yes.",
+		"Before… yes. <pre>In pre... no.</pre> After… yes.");
+
+	fast_aleck_test(&res,
+		"Before... yes. <code>In code... no.</code> After... yes.",
+		"Before… yes. <code>In code... no.</code> After… yes.");
+
+	fast_aleck_test(&res,
+		"Before... yes. <kbd>In kbd... no.</kbd> After... yes.",
+		"Before… yes. <kbd>In kbd... no.</kbd> After… yes.");
+
+	fast_aleck_test(&res,
+		"Before... yes. <p>In something else (like p)... yes!</p> After... yes.",
+		"Before… yes. <p>In something else (like p)… yes!</p> After… yes.");
+
 	fprintf(stderr, "%i tests with %i failures\n", res.passes+res.fails, res.fails);
 }
 
