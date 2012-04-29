@@ -143,6 +143,55 @@ static inline fa_bool _fa_should_open_quote(char in)
 	return in == '(' || isspace(in);
 }
 
+static inline void _fa_finish(char *a_out, enum _fa_state a_state)
+{
+	switch (a_state)
+	{
+		case _fa_state_dot:
+			*a_out++ = '.';
+			break;
+
+		case _fa_state_dotdot:
+			*a_out++ = '.';
+			*a_out++ = '.';
+			break;
+
+		case _fa_state_dash:
+			*a_out++ = '-';
+			break;
+
+		case _fa_state_dashdash:
+			*a_out++ = '-';
+			*a_out++ = '-';
+			break;
+
+		case _fa_state_tag:
+			*a_out++ = '>';
+			break;
+
+		case _fa_state_cdata:
+			*a_out++ = ']';
+			*a_out++ = ']';
+			*a_out++ = '>';
+			break;
+
+		case _fa_state_attr_squo:
+			*a_out++ = '\'';
+			*a_out++ = '>';
+			break;
+
+		case _fa_state_attr_dquo:
+			*a_out++ = '"';
+			*a_out++ = '>';
+			break;
+
+		default:
+			break;
+	}
+
+	*a_out++ = '\0';
+}
+
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 {
 	enum _fa_state state = _fa_state_start;
@@ -393,6 +442,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			state = _fa_state_tag;
 		continue;
 	}
+
+	_fa_finish(out, state);
 
 	return out_start;
 }
