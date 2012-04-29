@@ -49,6 +49,14 @@ int main(void)
 		"Weird! This sentence ends in three dashes---",
 		"Weird! This sentence ends in three dashes—");
 
+	fast_aleck_test(&res,
+		"My sister's book. My sisters' books.",
+		"My sister’s book. My sisters’ books.");
+
+	fast_aleck_test(&res,
+		"'Hello', she said. 'Hello,' she said. 'Huh...' she mumbled.",
+		"‘Hello’, she said. ‘Hello,’ she said. ‘Huh…’ she mumbled.");
+
 	fprintf(stderr, "%i tests with %i failures\n", res.passes+res.fails, res.fails);
 }
 

@@ -245,7 +245,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			state = _fa_state_dash;
 		else if (*in == '\'' && !off)
 		{
-			if (in > a_in && _fa_should_open_quote(*(in-1)))
+			if (in == a_in || _fa_should_open_quote(*(in-1)))
 				out += _fa_write_single_quote_start(out, a_config.wrap_quotes);
 			else
 				out += _fa_write_single_quote_end(out, a_config.wrap_quotes);
