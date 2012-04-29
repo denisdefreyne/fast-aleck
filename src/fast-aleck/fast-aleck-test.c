@@ -57,6 +57,10 @@ int main(void)
 		"'Hello', she said. 'Hello,' she said. 'Huh...' she mumbled.",
 		"‘Hello’, she said. ‘Hello,’ she said. ‘Huh…’ she mumbled.");
 
+	fast_aleck_test(&res,
+		"\"Hello\", she said. \"Hello,\" she said. \"Huh...\" she mumbled.",
+		"“Hello”, she said. “Hello,” she said. “Huh…” she mumbled.");
+
 	fprintf(stderr, "%i tests with %i failures\n", res.passes+res.fails, res.fails);
 }
 
