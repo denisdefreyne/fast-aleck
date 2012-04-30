@@ -11,6 +11,7 @@ enum _fa_state
 	_fa_state_dotdot,
 	_fa_state_dash,
 	_fa_state_dashdash,
+	_fa_state_tag_start,
 	_fa_state_tag,
 	_fa_state_cdata,
 	_fa_state_attr_squo,
@@ -164,6 +165,7 @@ static inline void _fa_finish(char *a_out, enum _fa_state a_state)
 			a_out += _fa_write_mdash(a_out);
 			break;
 
+		case _fa_state_tag_start:
 		case _fa_state_tag:
 			*a_out++ = '>';
 			break;
@@ -233,6 +235,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			case _fa_state_dash:      goto UP_STATE_DASH;      break;
 			case _fa_state_dashdash:  goto UP_STATE_DASHDASH;  break;
 			case _fa_state_tag:       goto UP_STATE_TAG;       break;
+			case _fa_state_tag_start: goto UP_STATE_TAG_START; break;
 			case _fa_state_cdata:     goto UP_STATE_CDATA;     break;
 			case _fa_state_attr_squo: goto UP_STATE_ATTR_SQUO; break;
 			case _fa_state_attr_dquo: goto UP_STATE_ATTR_DQUO; break;
@@ -260,7 +263,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 		else if (*in == '<')
 		{
 			*out++ = *in;
-			state = _fa_state_tag;
+			state = _fa_state_tag_start;
 		}
 		else if (*in == '&' && !off && a_config.wrap_amps && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
 		{
@@ -322,27 +325,19 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 		}
 		continue;
 
-	UP_STATE_TAG:
+	UP_STATE_TAG_START:
 		*out++ = *in;
-		if (*in == '>')
+		if (*in == '/')
 		{
-			end_tag_slash_detected = 0;
-			state = _fa_state_start;
+			end_tag_slash_detected = 1;
+			continue;
 		}
-		else if (*in == '\'')
-			state = _fa_state_attr_squo;
-		else if (*in == '"')
-			state = _fa_state_attr_dquo;
 		else if (*in == '!' && (in + 7 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "[CDATA[", 7))
 		{
 			in += 7;
 			memcpy(out, "[CDATA[", 7);
 			out += 7;
 			state = _fa_state_cdata;
-		}
-		else if (*in == '/')
-		{
-			end_tag_slash_detected = 1;
 		}
 		// code
 		else if (*in == 'c' && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "ode", 3) && (isspace(*(in+4)) || *(in+4) == '>')) 
@@ -416,6 +411,20 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 				off       = 1;
 			}
 		}
+		state = _fa_state_tag;
+		continue;
+
+	UP_STATE_TAG:
+		*out++ = *in;
+		if (*in == '>')
+		{
+			end_tag_slash_detected = 0;
+			state = _fa_state_start;
+		}
+		else if (*in == '\'')
+			state = _fa_state_attr_squo;
+		else if (*in == '"')
+			state = _fa_state_attr_dquo;
 		continue;
 
 	UP_STATE_CDATA:

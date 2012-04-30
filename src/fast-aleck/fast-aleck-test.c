@@ -126,6 +126,22 @@ int main(void)
 		"Before... <scriptzzz>during...</scriptzzz> after...",
 		"Before… <scriptzzz>during…</scriptzzz> after…");
 
+	fast_aleck_test(&test_case,
+		"Before... <zzzcode>during...</zzzcode> after...",
+		"Before… <zzzcode>during…</zzzcode> after…");
+
+	fast_aleck_test(&test_case,
+		"Before... <zzzkbd>during...</zzzkbd> after...",
+		"Before… <zzzkbd>during…</zzzkbd> after…");
+
+	fast_aleck_test(&test_case,
+		"Before... <zzzpre>during...</zzzpre> after...",
+		"Before… <zzzpre>during…</zzzpre> after…");
+
+	fast_aleck_test(&test_case,
+		"Before... <zzzscript>during...</zzzscript> after...",
+		"Before… <zzzscript>during…</zzzscript> after…");
+
 	test_case.wrap_amps = 1;
 
 	fast_aleck_test(&test_case,
