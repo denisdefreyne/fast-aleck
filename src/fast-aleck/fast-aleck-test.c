@@ -106,6 +106,10 @@ int main(void)
 		"Before... <pre>In pre... <code>In code...</code> In pre...</pre> After...",
 		"Before… <pre>In pre... <code>In code...</code> In pre...</pre> After…");
 
+	fast_aleck_test(&test_case,
+		"Some <em>text</em> wrapped in <span class=\"meh\">elements</span>.",
+		"Some <em>text</em> wrapped in <span class=\"meh\">elements</span>.");
+
 	test_case.wrap_amps = 1;
 
 	fast_aleck_test(&test_case,
