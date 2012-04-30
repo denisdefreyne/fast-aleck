@@ -345,7 +345,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			end_tag_slash_detected = 1;
 		}
 		// code
-		else if (*in == 'c' && (in + 3 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "ode", 3))
+		else if (*in == 'c' && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "ode", 3) && (isspace(*(in+4)) || *(in+4) == '>')) 
 		{
 			in += 3;
 			memcpy(out, "ode", 3);
@@ -363,7 +363,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			}
 		}
 		// kbd
-		else if (*in == 'k' && (in + 2 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "bd", 2))
+		else if (*in == 'k' && (in + 3 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "bd", 2) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
 			in += 2;
 			memcpy(out, "bd", 2);
@@ -381,7 +381,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			}
 		}
 		// pre
-		else if (*in == 'p' && (in + 2 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "re", 2))
+		else if (*in == 'p' && (in + 3 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "re", 2) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
 			in += 2;
 			memcpy(out, "re", 2);
@@ -399,7 +399,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			}
 		}
 		// script
-		else if (*in == 's' && (in + 5 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "cript", 5))
+		else if (*in == 's' && (in + 6 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "cript", 5) && (isspace(*(in+6)) || *(in+6) == '>'))
 		{
 			in += 5;
 			memcpy(out, "cript", 5);
