@@ -214,7 +214,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 
 	for (; *in; ++in)
 	{
-		if (out - out_start >= out_size - 30)
+		if (out - out_start + 30 >= out_size)
 		{
 			char *out_start_old = out_start;
 			out_size = (out_size + 30) * 2;
