@@ -353,13 +353,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 
 			if (end_tag_slash_detected)
 			{
-				in_kbd = 0;
-				off    = in_code || in_kbd || in_pre || in_script;
+				in_code = 0;
+				off     = in_kbd || in_pre || in_script;
 			}
 			else
 			{
-				in_kbd = 1;
-				off    = 1;
+				in_code = 1;
+				off     = 1;
 			}
 		}
 		// kbd
@@ -372,7 +372,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 			if (end_tag_slash_detected)
 			{
 				in_kbd = 0;
-				off    = in_code || in_kbd || in_pre || in_script;
+				off    = in_code || in_pre || in_script;
 			}
 			else
 			{
@@ -389,12 +389,12 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 
 			if (end_tag_slash_detected)
 			{
-				in_kbd = 0;
-				off    = in_code || in_kbd || in_pre || in_script;
+				in_pre = 0;
+				off    = in_code || in_kbd || in_script;
 			}
 			else
 			{
-				in_kbd = 1;
+				in_pre = 1;
 				off    = 1;
 			}
 		}
@@ -407,13 +407,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size)
 
 			if (end_tag_slash_detected)
 			{
-				in_kbd = 0;
-				off    = in_code || in_kbd || in_pre || in_script;
+				in_script = 0;
+				off       = in_code || in_kbd || in_pre;
 			}
 			else
 			{
-				in_kbd = 1;
-				off    = 1;
+				in_script = 1;
+				off       = 1;
 			}
 		}
 		continue;

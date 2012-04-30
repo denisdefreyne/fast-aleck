@@ -102,6 +102,10 @@ int main(void)
 		"Before... yes. <p>In something else (like p)... yes!</p> After... yes.",
 		"Before… yes. <p>In something else (like p)… yes!</p> After… yes.");
 
+	fast_aleck_test(&test_case,
+		"Before... <pre>In pre... <code>In code...</code> In pre...</pre> After...",
+		"Before… <pre>In pre... <code>In code...</code> In pre...</pre> After…");
+
 	test_case.wrap_amps = 1;
 
 	fast_aleck_test(&test_case,
