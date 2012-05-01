@@ -11,6 +11,7 @@ struct fast_aleck_test_case {
 
 	char wrap_amps;
 	char wrap_quotes;
+	char widont;
 };
 
 void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, char *a_expected_output);
@@ -196,7 +197,21 @@ int main(void)
 		"\"Here.\"<div>\"Here.\" \"Not here.\"<div>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">”</span>Here.” “Not here.”<div><span class=\"dquo\">”</span>Here.”");
 
+	// TODO h1, h2, ..., h6
+
 	test_case.wrap_quotes = 0;
+
+	// WIDONT TESTS
+
+	test_case.widont = 1;
+
+	fast_aleck_test(&test_case,
+		"<p>Foo bar baz.</p><p>Woof meow moo.</p>",
+		"<p>Foo bar&nbsp;baz.</p><p>Woof meow&nbsp;moo.</p>");
+
+	// TODO li
+	// TODO div
+	// TODO h1, h2, ..., h6
 
 	return (test_case.fails > 0 ? 1 : 0);
 }
@@ -206,6 +221,7 @@ void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, ch
 	fast_aleck_config config;
 	config.wrap_amps   = a_test_case->wrap_amps;
 	config.wrap_quotes = a_test_case->wrap_quotes;
+	config.widont      = a_test_case->widont;
 
 	size_t out_len;
 	char *actual_output = fast_aleck(config, a_input, strlen(a_input), &out_len);

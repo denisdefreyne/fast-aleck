@@ -215,6 +215,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool end_tag_slash_detected = 0;
 	fa_bool is_at_start_of_run     = 1;
 
+	char *out_last_space = NULL;
+
 	for (; *in; ++in)
 	{
 		if (out + 30 >= out_start + out_size)
@@ -274,7 +276,11 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			out += _fa_write_wrapped_amp(out);
 		}
 		else
+		{
+			if (isspace(*in))
+				out_last_space = out;
 			*out++ = *in;
+		}
 		is_at_start_of_run = 0;
 		continue;
 
@@ -345,6 +351,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		}
 		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
+			if (a_config.widont && out_last_space)
+			{
+				memmove(out_last_space+6-1, out_last_space, out+1-out_last_space);
+				memcpy(out_last_space, "&nbsp;", 6);
+				out += 5;
+				out_last_space = NULL;
+			}
 			*out++ = *in;
 			state = _fa_state_tag;
 			is_at_start_of_run = 1;

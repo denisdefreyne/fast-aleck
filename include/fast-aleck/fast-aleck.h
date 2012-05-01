@@ -8,6 +8,7 @@ typedef char fa_bool;
 typedef struct _fast_aleck_config {
 	fa_bool wrap_amps;
 	fa_bool wrap_quotes;
+	fa_bool widont;
 } fast_aleck_config;
 
 // params:
