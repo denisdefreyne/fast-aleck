@@ -24,6 +24,7 @@ int main(void)
 	test_case.fails       = 0;
 	test_case.wrap_amps   = 0;
 	test_case.wrap_quotes = 0;
+	test_case.widont      = 0;
 
 	fprintf(stdout, "1..%i\n", test_case.count);
 
