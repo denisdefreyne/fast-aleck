@@ -11,19 +11,7 @@ module FastAleck
     identifier :fast_aleck
 
     def run(content, params={})
-      config = FastAleck::Config.new
-
-      if params[:wrap_amps]
-        config[:wrap_amps] = 1
-      end
-
-      if params[:wrap_quotes]
-        config[:wrap_quotes] = 1
-      end
-
-      p config
-
-      FastAleck.process(config, content)
+      FastAleck.process(content, params)
     end
 
   end
