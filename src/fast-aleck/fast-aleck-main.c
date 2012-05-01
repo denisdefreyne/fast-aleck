@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	config.wrap_quotes = wrap_quotes;
 	struct timeval tp1, tp2;
 	gettimeofday(&tp1, NULL);
-	char *out = fast_aleck(config, in, stat.st_size);
+	char *out = fast_aleck(config, in, stat.st_size, NULL);
 	gettimeofday(&tp2, NULL);
 
 	// Write
