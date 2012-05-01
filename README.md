@@ -14,6 +14,24 @@ Here are the results of a benchmark in which a copy of Alice's Adventures in Won
 
 Fast Aleck is over 15 times as fast as Rubypants and about 400x as fast as Typogruby. Admittedly, this benchmark is flawed because Fast Aleck does not do everything Typogruby does, but the order of magnitude should remain correct once Fast Aleck is complete.
 
+Installation
+------------
+
+Building Fast Aleck requires CMake. Once you have that:
+
+	% mkdir build
+	% cd build
+	% cmake ..
+	% make
+
+There will be three executables in the build directory once that is finished:
+
+* `fast-aleck` is the commandline tool (try `fast-aleck --help` for help)
+* `libfast-aleck.so` is the shared library (the exact name might differ depending on the OS)
+* `fast-aleck-test` is a tool that runs the tests
+
+If you intend to use the Ruby bindings, copy `libfast-aleck.so` to a public location (such as `/usr/local/lib`) or into the directory where you are executing Ruby from. For instance, if you want to use Fast Aleck with nanoc, you can copy `libfast-aleck.so` into the site directory (not in `./lib`).
+
 To do
 -----
 
