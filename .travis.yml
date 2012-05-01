@@ -1,4 +1,10 @@
 language: ruby
-script: "cc -I include src/fast-aleck/fast-aleck.c src/fast-aleck/fast-aleck-test.c -o fast-aleck-test && ./fast-aleck-test"
+install:
+  - sudo apt-get -qq install cmake
+script:
+  - mkdir _build && cd _build
+  - cmake ..
+  - make
+  - ./fast-aleck-test
 notifications:
   irc: "chat.freenode.net#nanoc"
