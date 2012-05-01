@@ -232,8 +232,9 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool in_kbd    = 0;
 	fa_bool in_pre    = 0;
 	fa_bool in_script = 0;
-	fa_bool end_tag_slash_detected = 0;
-	fa_bool is_at_start_of_run     = 1;
+	fa_bool end_tag_slash_detected  = 0;
+	fa_bool is_at_start_of_run      = 1;
+	fa_bool at_least_one_char_found = 0;
 
 	char *out_last_space = NULL;
 	char *out_first_caps = NULL;
@@ -309,14 +310,16 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		{
 			if (a_config.wrap_caps)
 			{
-				if (isupper(*in))
+				if (isupper(*in) || isdigit(*in))
 				{
+					if (isupper(*in))
+						at_least_one_char_found = 1;
 					out_last_caps = out;
 					if (!out_first_caps)
 						out_first_caps = out;
 					*out++ = *in;
 				}
-				else if (out_last_caps && out_last_caps - out_first_caps > 1)
+				else if (at_least_one_char_found && out_last_caps && out_last_caps - out_first_caps > 1)
 				{
 					char *s1 = "<span class=\"caps\">";
 					char *s2 = "</span>";
@@ -341,12 +344,14 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 
 					out_first_caps = NULL;
 					out_last_caps  = NULL;
+					at_least_one_char_found = 0;
 				}
 				else
 				{
 					*out++ = *in;
 					out_first_caps = NULL;
 					out_last_caps  = NULL;
+					at_least_one_char_found = 0;
 				}
 			}
 			else if (isspace(*in))
