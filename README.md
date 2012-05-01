@@ -14,6 +14,21 @@ Here are the results of a benchmark in which a copy of Alice's Adventures in Won
 
 Fast Aleck is over 15 times as fast as Rubypants and about 400x as fast as Typogruby. Admittedly, this benchmark is flawed because Fast Aleck does not do everything Typogruby does, but the order of magnitude should remain correct once Fast Aleck is complete.
 
+Features
+--------
+
+* ... → …
+* -- → —
+* --- → —
+* '' → ‘’
+* "" → “”
+* Skips text inside `code`, `kbd`, `pre` and `script` elements
+* Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
+* Optionally wraps `'` in a span with class `quo`
+* Optionally wraps `"` in a span with class `dquo`
+* Widon't
+* class="caps" for multiple capital letters
+
 Installation
 ------------
 
@@ -38,18 +53,3 @@ To do
 * Implement wrapping multiple capitals in `<span class="caps">...</span>`
 * Implement Widon't for other block elements (e.g. `h1` to `h6`)
 * Implement turning HTML off inside `<title>`
-
-Features
---------
-
-* ... → …
-* -- → —
-* --- → —
-* '' → ‘’
-* "" → “”
-* Skips text inside `code`, `kbd`, `pre` and `script` elements
-* Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
-* Optionally wraps `'` in a span with class `quo`
-* Optionally wraps `"` in a span with class `dquo`
-* Widon't
-* class="caps" for multiple capital letters
