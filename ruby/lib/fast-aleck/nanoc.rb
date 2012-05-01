@@ -11,7 +11,9 @@ module FastAleck
     identifier :fast_aleck
 
     def run(content, params={})
-      FastAleck.process(content, params)
+      res = FastAleck.process(content, params)
+      res.force_encoding('utf-8')
+      res
     end
 
   end

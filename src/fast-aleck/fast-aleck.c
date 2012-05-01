@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -201,7 +202,7 @@ static inline size_t _fa_finish(char *a_out, enum _fa_state a_state)
 	return out - a_out - 1;
 }
 
-static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, char *is_at_start_of_run, enum _fa_state *state, fast_aleck_config config)
+static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, char *is_at_start_of_run, enum _fa_state *state, fast_aleck_config config, char **last_char)
 {
 	if (config.widont && *out_last_space)
 	{
@@ -212,6 +213,7 @@ static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, 
 	}
 	*state = _fa_state_tag;
 	*is_at_start_of_run = 1;
+	*last_char = NULL;
 }
 
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_len)
@@ -236,12 +238,14 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	char *out_last_space = NULL;
 	char *out_first_caps = NULL;
 	char *out_last_caps  = NULL;
+	char *out_last_char  = NULL;
 
 	for (; *in; ++in)
 	{
 		if (out + 30 >= out_start + out_size)
 		{
 			char *out_start_old = out_start;
+			
 			out_size = (out_size + 30) * 2;
 			out_start = realloc(out_start, out_size);
 			if (!out_start)
@@ -249,7 +253,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 				free(out_start_old);
 				return NULL;
 			}
-			out = out_start + (out - out_start_old);
+
+			ptrdiff_t diff = out_start - out_start_old;
+			out += diff;
+			if (out_last_space) out_last_space += diff;
+			if (out_first_caps) out_first_caps += diff;
+			if (out_last_caps)  out_last_caps  += diff;
+			if (out_last_char)  out_last_char  += diff;
 		}
 
 		switch (state)
@@ -273,14 +283,14 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			state = _fa_state_dash;
 		else if (*in == '\'' && !off)
 		{
-			if (in == a_in || _fa_should_open_quote(*(in-1)))
+			if (!out_last_char || _fa_should_open_quote(*out_last_char))
 				out += _fa_write_single_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
 			else
 				out += _fa_write_single_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
 		}
 		else if (*in == '"' && !off)
 		{
-			if (in == a_in || _fa_should_open_quote(*(in-1)))
+			if (!out_last_char || _fa_should_open_quote(*out_last_char))
 				out += _fa_write_double_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
 			else
 				out += _fa_write_double_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
@@ -304,32 +314,31 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					out_last_caps = out;
 					if (!out_first_caps)
 						out_first_caps = out;
-					out_last_caps = out;
 					*out++ = *in;
 				}
 				else if (out_last_caps && out_last_caps - out_first_caps > 1)
 				{
 					char *s1 = "<span class=\"caps\">";
 					char *s2 = "</span>";
-					
+
 					// move out so that s1 fits
 					memmove(out_first_caps + strlen(s1), out_first_caps, out_last_caps + 1 - out_first_caps);
-					
+
 					// write s1 before out
 					memcpy(out_first_caps, s1, strlen(s1));
-					
+
 					// move right after out
 					out += strlen(s1);
-					
+
 					// write s2
 					memcpy(out, s2, strlen(s2));
-					
+
 					// move to end
 					out += strlen(s2);
-					
+
 					// write whatever we ignored so far
 					*out++ = *in;
-					
+
 					out_first_caps = NULL;
 					out_last_caps  = NULL;
 				}
@@ -347,6 +356,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			}
 			else
 				*out++ = *in;
+			out_last_char = out-1;
 		}
 		is_at_start_of_run = 0;
 		continue;
@@ -419,48 +429,48 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		// start/end tags for resetting elements
 		else if (0 == strncmp(in, "blockquote", 10) && (isspace(*(in+10)) || *(in+10) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			in += 9;
 			memcpy(out, "blockquote", 10);
 			out += 10;
 		}
 		else if (0 == strncmp(in, "dd", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			in += 1;
 			memcpy(out, "dd", 2);
 			out += 2;
 		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			in += 2;
 			memcpy(out, "div", 3);
 			out += 3;
 		}
 		else if (0 == strncmp(in, "dt", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			in += 1;
 			memcpy(out, "dt", 2);
 			out += 2;
 		}
 		else if ('h' == *in && *(in+1) >= '1' && *(in+1) <= '6' && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			*out++ = *in++;
 			*out++ = *in;
 		}
 		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			in += 1;
 			memcpy(out, "li", 2);
 			out += 2;
 		}
 		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char);
 			*out++ = *in;
 		}
 		// start/end tags for excluded elements

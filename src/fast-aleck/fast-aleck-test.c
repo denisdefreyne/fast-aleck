@@ -158,6 +158,30 @@ int main(void)
 		"<script>a",
 		"<script>a");
 
+	fast_aleck_test(&test_case,
+		"\"<a href=\"#\">blah</a>\"",
+		"“<a href=\"#\">blah</a>”");
+
+	fast_aleck_test(&test_case,
+		"<a href=\"#\">\"blah\"</a>",
+		"<a href=\"#\">“blah”</a>");
+
+	fast_aleck_test(&test_case,
+		"\"blah <a href=\"#\">blah</a>\"",
+		"“blah <a href=\"#\">blah</a>”");
+
+	fast_aleck_test(&test_case,
+		"\"<div>blah</div>\"",
+		"“<div>blah</div>“");
+
+	fast_aleck_test(&test_case,
+		"<div>\"blah\"</div>",
+		"<div>“blah”</div>");
+
+	fast_aleck_test(&test_case,
+		"\"blah <div>blah</div>\"",
+		"“blah <div>blah</div>“");
+
 	// WRAP AMPS TESTS
 
 	test_case.wrap_amps = 1;
@@ -190,15 +214,15 @@ int main(void)
 
 	fast_aleck_test(&test_case,
 		"\"Here.\"<p>\"Here.\" \"Not here.\"<p>\"Here.\"",
-		"<span class=\"dquo\">“</span>Here.”<p><span class=\"dquo\">”</span>Here.” “Not here.”<p><span class=\"dquo\">”</span>Here.”");
+		"<span class=\"dquo\">“</span>Here.”<p><span class=\"dquo\">“</span>Here.” “Not here.”<p><span class=\"dquo\">“</span>Here.”");
 
 	fast_aleck_test(&test_case,
 		"\"Here.\"<li>\"Here.\" \"Not here.\"<li>\"Here.\"",
-		"<span class=\"dquo\">“</span>Here.”<li><span class=\"dquo\">”</span>Here.” “Not here.”<li><span class=\"dquo\">”</span>Here.”");
+		"<span class=\"dquo\">“</span>Here.”<li><span class=\"dquo\">“</span>Here.” “Not here.”<li><span class=\"dquo\">“</span>Here.”");
 
 	fast_aleck_test(&test_case,
 		"\"Here.\"<div>\"Here.\" \"Not here.\"<div>\"Here.\"",
-		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">”</span>Here.” “Not here.”<div><span class=\"dquo\">”</span>Here.”");
+		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">“</span>Here.” “Not here.”<div><span class=\"dquo\">“</span>Here.”");
 
 	// TODO h1, h2, ..., h6
 
