@@ -10,6 +10,7 @@ struct fast_aleck_test_case {
 	int fails;
 
 	char wrap_amps;
+	char wrap_caps;
 	char wrap_quotes;
 	char widont;
 };
@@ -23,6 +24,7 @@ int main(void)
 	test_case.passes      = 0;
 	test_case.fails       = 0;
 	test_case.wrap_amps   = 0;
+	test_case.wrap_caps   = 0;
 	test_case.wrap_quotes = 0;
 	test_case.widont      = 0;
 
@@ -242,7 +244,21 @@ int main(void)
 		"<h6>Foo bar baz.</h6><h6>Woof meow moo.</h6>",
 		"<h6>Foo bar&nbsp;baz.</h6><h6>Woof meow&nbsp;moo.</h6>");
 
-	// TODO h1, h2, ..., h6
+	fast_aleck_test(&test_case,
+		"<blockquote>Foo bar baz.</blockquote><blockquote>Woof meow moo.</blockquote>",
+		"<blockquote>Foo bar&nbsp;baz.</blockquote><blockquote>Woof meow&nbsp;moo.</blockquote>");
+
+	test_case.widont = 0;
+
+	// WRAP CAPS TEST
+
+	test_case.wrap_caps = 1;
+
+	fast_aleck_test(&test_case,
+		"Hello, this is DENIS speaking!",
+		"Hello, this is <span class=\"caps\">DENIS</span> speaking!");
+
+	test_case.wrap_caps = 0;
 
 	return (test_case.fails > 0 ? 1 : 0);
 }
@@ -250,8 +266,9 @@ int main(void)
 void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, char *a_expected_output)
 {
 	fast_aleck_config config;
-    init_fast_aleck_config(&config);
+	init_fast_aleck_config(&config);
 	config.wrap_amps   = a_test_case->wrap_amps;
+	config.wrap_caps   = a_test_case->wrap_caps;
 	config.wrap_quotes = a_test_case->wrap_quotes;
 	config.widont      = a_test_case->widont;
 

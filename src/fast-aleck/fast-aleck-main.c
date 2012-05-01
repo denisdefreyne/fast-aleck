@@ -11,24 +11,29 @@
 int main(int argc, char **argv)
 {
 	// Parse opts
-	int wrap_amps = 0, wrap_quotes = 0, widont = 0;
+	int wrap_amps = 0, wrap_quotes = 0, widont = 0, wrap_caps = 0;
 	static struct option longopts[] = {
 		{ "wrap-amps",   no_argument, NULL, 'a' },
+		{ "wrap-caps",   no_argument, NULL, 'c' },
 		{ "help",        no_argument, NULL, 'h' },
 		{ "wrap-quotes", no_argument, NULL, 'q' },
 		{ "widont",      no_argument, NULL, 'w' },
 		{ NULL,          0,           NULL, 0   }
 	};
 	int ch;
-	while ((ch = getopt_long(argc, argv, "ahqw", longopts, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "achqw", longopts, NULL)) != -1)
 		switch (ch) {
 		case 'a':
 			wrap_amps = 1;
+			break;
+		case 'c':
+			wrap_caps = 1;
 			break;
 		case 'h':
 			fprintf(stderr, "usage: fast-aleck [options] [filename]\n");
 			fprintf(stdout, "options:\n");
 			fprintf(stdout, "  -a --wrap-amps   wrap ampersands in <span class=\"amp\">\n");
+			fprintf(stdout, "  -c --wrap-caps   wrap consecutive capitals in <span class=\"caps\">\n");
 			fprintf(stdout, "  -h --help        display help\n");
 			fprintf(stdout, "  -q --wrap-quotes wrap quotes in <span class=\"quo\"> or <span class=\"dquo\">\n");
 			fprintf(stdout, "  -w --widont      replace last space in paragraph with non-breaking space to prevent widows\n");
@@ -85,6 +90,7 @@ int main(int argc, char **argv)
 	config.wrap_amps   = wrap_amps;
 	config.wrap_quotes = wrap_quotes;
 	config.widont      = widont;
+	config.wrap_caps   = wrap_caps;
 	struct timeval tp1, tp2;
 	gettimeofday(&tp1, NULL);
 	char *out = fast_aleck(config, in, stat.st_size, NULL);

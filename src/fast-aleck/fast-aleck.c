@@ -4,10 +4,6 @@
 
 #include <fast-aleck/fast-aleck.h>
 
-void init_fast_aleck_config(fast_aleck_config *config) {
-    bzero(config, sizeof(fast_aleck_config));
-}
-
 enum _fa_state
 {
 	_fa_state_start,
@@ -21,6 +17,11 @@ enum _fa_state
 	_fa_state_attr_squo,
 	_fa_state_attr_dquo
 };
+
+void init_fast_aleck_config(fast_aleck_config *config)
+{
+	bzero(config, sizeof(fast_aleck_config));
+}
 
 static inline size_t _fa_write_ellipsis(char *out)
 {
@@ -233,6 +234,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool is_at_start_of_run     = 1;
 
 	char *out_last_space = NULL;
+	char *out_first_caps = NULL;
+	char *out_last_caps  = NULL;
 
 	for (; *in; ++in)
 	{
@@ -294,9 +297,56 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		}
 		else
 		{
-			if (isspace(*in))
+			if (a_config.wrap_caps)
+			{
+				if (isupper(*in))
+				{
+					out_last_caps = out;
+					if (!out_first_caps)
+						out_first_caps = out;
+					out_last_caps = out;
+					*out++ = *in;
+				}
+				else if (out_last_caps && out_last_caps - out_first_caps > 1)
+				{
+					char *s1 = "<span class=\"caps\">";
+					char *s2 = "</span>";
+					
+					// move out so that s1 fits
+					memmove(out_first_caps + strlen(s1), out_first_caps, out_last_caps + 1 - out_first_caps);
+					
+					// write s1 before out
+					memcpy(out_first_caps, s1, strlen(s1));
+					
+					// move right after out
+					out += strlen(s1);
+					
+					// write s2
+					memcpy(out, s2, strlen(s2));
+					
+					// move to end
+					out += strlen(s2);
+					
+					// write whatever we ignored so far
+					*out++ = *in;
+					
+					out_first_caps = NULL;
+					out_last_caps  = NULL;
+				}
+				else
+				{
+					*out++ = *in;
+					out_first_caps = NULL;
+					out_last_caps  = NULL;
+				}
+			}
+			else if (isspace(*in))
+			{
 				out_last_space = out;
-			*out++ = *in;
+				*out++ = *in;
+			}
+			else
+				*out++ = *in;
 		}
 		is_at_start_of_run = 0;
 		continue;
@@ -367,6 +417,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			state = _fa_state_cdata;
 		}
 		// start/end tags for resetting elements
+		else if (0 == strncmp(in, "blockquote", 10) && (isspace(*(in+10)) || *(in+10) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			in += 9;
+			memcpy(out, "blockquote", 10);
+			out += 10;
+		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
 			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
