@@ -218,6 +218,30 @@ int main(void)
 		"<div>Foo bar baz.</div><div>Woof meow moo.</div>",
 		"<div>Foo bar&nbsp;baz.</div><div>Woof meow&nbsp;moo.</div>");
 
+	fast_aleck_test(&test_case,
+		"<h1>Foo bar baz.</h1><h1>Woof meow moo.</h1>",
+		"<h1>Foo bar&nbsp;baz.</h1><h1>Woof meow&nbsp;moo.</h1>");
+
+	fast_aleck_test(&test_case,
+		"<h2>Foo bar baz.</h2><h2>Woof meow moo.</h2>",
+		"<h2>Foo bar&nbsp;baz.</h2><h2>Woof meow&nbsp;moo.</h2>");
+
+	fast_aleck_test(&test_case,
+		"<h3>Foo bar baz.</h3><h3>Woof meow moo.</h3>",
+		"<h3>Foo bar&nbsp;baz.</h3><h3>Woof meow&nbsp;moo.</h3>");
+
+	fast_aleck_test(&test_case,
+		"<h4>Foo bar baz.</h4><h4>Woof meow moo.</h4>",
+		"<h4>Foo bar&nbsp;baz.</h4><h4>Woof meow&nbsp;moo.</h4>");
+
+	fast_aleck_test(&test_case,
+		"<h5>Foo bar baz.</h5><h5>Woof meow moo.</h5>",
+		"<h5>Foo bar&nbsp;baz.</h5><h5>Woof meow&nbsp;moo.</h5>");
+
+	fast_aleck_test(&test_case,
+		"<h6>Foo bar baz.</h6><h6>Woof meow moo.</h6>",
+		"<h6>Foo bar&nbsp;baz.</h6><h6>Woof meow&nbsp;moo.</h6>");
+
 	// TODO h1, h2, ..., h6
 
 	return (test_case.fails > 0 ? 1 : 0);

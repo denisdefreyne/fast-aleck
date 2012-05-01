@@ -362,9 +362,18 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			out += 8;
 			state = _fa_state_cdata;
 		}
-		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
+		// start/end tags for resetting elements
+		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
 			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			in += 2;
+			memcpy(out, "div", 3);
+			out += 3;
+		}
+		else if ('h' == *in && *(in+1) >= '1' && *(in+1) <= '6' && (isspace(*(in+2)) || *(in+2) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			*out++ = *in++;
 			*out++ = *in;
 		}
 		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
@@ -374,21 +383,12 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			memcpy(out, "li", 2);
 			out += 2;
 		}
-		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
+		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
 			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
-			in += 2;
-			memcpy(out, "div", 3);
-			out += 3;
+			*out++ = *in;
 		}
-		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
-		{
-			in += 2;
-			memcpy(out, "div", 3);
-			out += 3;
-			state = _fa_state_tag;
-			is_at_start_of_run = 1;
-		}
+		// start/end tags for excluded elements
 		else if (0 == strncmp(in, "code", 4) && (isspace(*(in+4)) || *(in+4) == '>')) 
 		{
 			in += 3;
