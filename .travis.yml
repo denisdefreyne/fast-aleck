@@ -6,5 +6,3 @@ script:
   - cmake ..
   - make
   - ./fast-aleck-test
-notifications:
-  irc: "chat.freenode.net#nanoc"
