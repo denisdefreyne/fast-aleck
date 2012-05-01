@@ -349,6 +349,22 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			state = _fa_state_tag;
 			is_at_start_of_run = 1;
 		}
+		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
+		{
+			in += 1;
+			memcpy(out, "li", 2);
+			out += 2;
+			state = _fa_state_tag;
+			is_at_start_of_run = 1;
+		}
+		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
+		{
+			in += 2;
+			memcpy(out, "div", 3);
+			out += 3;
+			state = _fa_state_tag;
+			is_at_start_of_run = 1;
+		}
 		else if (0 == strncmp(in, "code", 4) && (isspace(*(in+4)) || *(in+4) == '>')) 
 		{
 			in += 3;

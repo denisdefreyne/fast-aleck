@@ -188,6 +188,14 @@ int main(void)
 		"\"Here.\"<p>\"Here.\" \"Not here.\"<p>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<p><span class=\"dquo\">”</span>Here.” “Not here.”<p><span class=\"dquo\">”</span>Here.”");
 
+	fast_aleck_test(&test_case,
+		"\"Here.\"<li>\"Here.\" \"Not here.\"<li>\"Here.\"",
+		"<span class=\"dquo\">“</span>Here.”<li><span class=\"dquo\">”</span>Here.” “Not here.”<li><span class=\"dquo\">”</span>Here.”");
+
+	fast_aleck_test(&test_case,
+		"\"Here.\"<div>\"Here.\" \"Not here.\"<div>\"Here.\"",
+		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">”</span>Here.” “Not here.”<div><span class=\"dquo\">”</span>Here.”");
+
 	test_case.wrap_quotes = 0;
 
 	return (test_case.fails > 0 ? 1 : 0);
