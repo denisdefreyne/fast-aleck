@@ -266,6 +266,10 @@ int main(void)
 		"Hello, this is DENIS speaking!",
 		"Hello, this is <span class=\"caps\">DENIS</span> speaking!");
 
+	fast_aleck_test(&test_case,
+		"I have 13 EC2 instances but no static AMIs.",
+		"I have 13 <span class=\"caps\">EC2</span> instances but no static <span class=\"caps\">AMI</span>s.");
+
 	test_case.wrap_caps = 0;
 
 	return (test_case.fails > 0 ? 1 : 0);
