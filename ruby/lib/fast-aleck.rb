@@ -18,11 +18,13 @@ module FastAleck
     # @api private
     class Config < ::FFI::Struct
       layout :wrap_amps,   :char,
-             :wrap_quotes, :char
+             :wrap_caps,   :char,
+             :wrap_quotes, :char,
+             :widont,      :char
     end
 
-    attach_function :fast_aleck, [ Config.by_value, :string, :int ], :pointer
-    attach_function :free,       [ :pointer                       ], :void
+    attach_function :fast_aleck, [ Config.by_value, :string, :int, :pointer ], :pointer
+    attach_function :free,       [ :pointer ], :void
 
   end
 
@@ -38,9 +40,12 @@ module FastAleck
   # @return [String] The processed string
   def self.process(s, params={})
     config = ::FastAleck::C::Config.new
-    config[:wrap_amps]   = params[:wrap_amps] ? 1 : 0
+    config[:wrap_amps]   = params[:wrap_amps]   ? 1 : 0
+    config[:wrap_caps]   = params[:wrap_caps]   ? 1 : 0
     config[:wrap_quotes] = params[:wrap_quotes] ? 1 : 0
-    ptr = ::FastAleck::C.fast_aleck(config, s, s.size)
+    config[:widont]      = params[:widont]      ? 1 : 0
+
+    ptr = ::FastAleck::C.fast_aleck(config, s, s.size, FFI::Pointer::NULL)
     str = ptr.read_string_to_null
     ::FastAleck::C.free(ptr)
     str
