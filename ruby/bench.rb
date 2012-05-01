@@ -17,11 +17,19 @@ Benchmark.bmbm do |r|
       Typogruby.improve(alice)
     end
   end
-  r.report('alice-fast-aleck') do 
+  r.report('alice-fast-aleck-all-options') do 
     5000.times do
-      config = FastAleck::Config.new
-      config[:wrap_amps] = 1
-      FastAleck.process(config, alice)
+      FastAleck.process(
+        alice,
+        :wrap_amps => true,
+        :wrap_caps => true,
+        :wrap_quotes => true,
+        :widont => true)
+    end
+  end
+  r.report('alice-fast-aleck-no-options') do 
+    5000.times do
+      FastAleck.process(alice)
     end
   end
 end

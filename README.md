@@ -5,14 +5,15 @@ Fast Aleck is a tool for making text look smarter by using proper Unicode charac
 How fast is it really?
 ----------------------
 
-Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced a thousand times (see ruby/bench.rb):
+Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced (see ruby/bench.rb):
 
-                           user     system      total        real
-    alice-rubypants    2.730000   0.090000   2.820000 (  2.811613)
-    alice-typogruby   62.050000   0.180000  62.230000 ( 62.232689)
-    alice-fast-aleck   0.140000   0.010000   0.150000 (  0.152693)
+                                          user          system      total        real
+    alice-rubypants              (50)     13.160000   0.390000  13.550000 ( 13.565909)
+    alice-typogruby              (500)    30.380000   0.080000  30.460000 ( 30.449274)
+    alice-fast-aleck-all-options (5000)   22.810000   0.250000  23.060000 ( 23.060701)
+    alice-fast-aleck-no-options  (5000)   23.730000   0.250000  23.980000 ( 23.972918)
 
-Fast Aleck is over 15 times as fast as Rubypants and about 400x as fast as Typogruby. Admittedly, this benchmark is flawed because Fast Aleck does not do everything Typogruby does, but the order of magnitude should remain correct once Fast Aleck is complete.
+In this benchmark, Fast Aleck is run 5000 times, RubyPants is run 500 times (10x less) and Typogrify is run 50 times (100x) less. Fast Aleck is over 5 times as fast as Rubypants and over 100x as fast as Typogruby.
 
 Features
 --------
