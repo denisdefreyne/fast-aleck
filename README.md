@@ -35,7 +35,9 @@ If you intend to use the Ruby bindings, copy `libfast-aleck.so` to a public loca
 To do
 -----
 
-* Implement remaining features listed below
+* Implement wrapping multiple capitals in `<span class="caps">...</span>`
+* Implement Widon't for other block elements (e.g. `h1` to `h6`)
+* Implement turning HTML off inside `<title>`
 
 Features
 --------
@@ -49,8 +51,5 @@ Features
 * Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
 * Optionally wraps `'` in a span with class `quo`
 * Optionally wraps `"` in a span with class `dquo`
-
-Not yet implemented but coming up:
-
 * Widon't
 * class="caps" for multiple capital letters
