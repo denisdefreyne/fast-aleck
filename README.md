@@ -10,8 +10,8 @@ Here are the results of a benchmark in which a copy of Alice's Adventures in Won
                                           user          system      total        real
     alice-rubypants              (50)     13.160000   0.390000  13.550000 ( 13.565909)
     alice-typogruby              (500)    30.380000   0.080000  30.460000 ( 30.449274)
-    alice-fast-aleck-all-options (5000)   22.810000   0.250000  23.060000 ( 23.060701)
-    alice-fast-aleck-no-options  (5000)   23.730000   0.250000  23.980000 ( 23.972918)
+    alice-fast-aleck-all-options (5000)   11.450000   0.260000  11.710000 ( 11.696178)
+    alice-fast-aleck-no-options  (5000)   10.910000   0.250000  11.160000 ( 11.164061)
 
 In this benchmark, Fast Aleck is run 5000 times, RubyPants is run 500 times (10x less) and Typogrify is run 50 times (100x) less. Fast Aleck is over 5 times as fast as Rubypants and over 100x as fast as Typogruby.
 
