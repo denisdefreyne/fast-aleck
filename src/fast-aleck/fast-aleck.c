@@ -196,6 +196,19 @@ static inline size_t _fa_finish(char *a_out, enum _fa_state a_state)
 	return out - a_out - 1;
 }
 
+static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, char *is_at_start_of_run, enum _fa_state *state, fast_aleck_config config)
+{
+	if (config.widont && *out_last_space)
+	{
+		memmove(*out_last_space+6-1, *out_last_space, *out+1-*out_last_space);
+		memcpy(*out_last_space, "&nbsp;", 6);
+		*out += 5;
+		*out_last_space = NULL;
+	}
+	*state = _fa_state_tag;
+	*is_at_start_of_run = 1;
+}
+
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_len)
 {
 	enum _fa_state state = _fa_state_start;
@@ -351,24 +364,22 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		}
 		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
-			if (a_config.widont && out_last_space)
-			{
-				memmove(out_last_space+6-1, out_last_space, out+1-out_last_space);
-				memcpy(out_last_space, "&nbsp;", 6);
-				out += 5;
-				out_last_space = NULL;
-			}
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
 			*out++ = *in;
-			state = _fa_state_tag;
-			is_at_start_of_run = 1;
 		}
 		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
 			in += 1;
 			memcpy(out, "li", 2);
 			out += 2;
-			state = _fa_state_tag;
-			is_at_start_of_run = 1;
+		}
+		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			in += 2;
+			memcpy(out, "div", 3);
+			out += 3;
 		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{

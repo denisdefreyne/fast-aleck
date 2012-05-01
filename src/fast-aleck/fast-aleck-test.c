@@ -210,8 +210,14 @@ int main(void)
 		"<p>Foo bar baz.</p><p>Woof meow moo.</p>",
 		"<p>Foo bar&nbsp;baz.</p><p>Woof meow&nbsp;moo.</p>");
 
-	// TODO li
-	// TODO div
+	fast_aleck_test(&test_case,
+		"<li>Foo bar baz.</li><li>Woof meow moo.</li>",
+		"<li>Foo bar&nbsp;baz.</li><li>Woof meow&nbsp;moo.</li>");
+
+	fast_aleck_test(&test_case,
+		"<div>Foo bar baz.</div><div>Woof meow moo.</div>",
+		"<div>Foo bar&nbsp;baz.</div><div>Woof meow&nbsp;moo.</div>");
+
 	// TODO h1, h2, ..., h6
 
 	return (test_case.fails > 0 ? 1 : 0);
