@@ -18,7 +18,7 @@ enum _fa_state
 	_fa_state_attr_dquo
 };
 
-void init_fast_aleck_config(fast_aleck_config *config)
+void fast_aleck_config_init(fast_aleck_config *config)
 {
 	bzero(config, sizeof(fast_aleck_config));
 }

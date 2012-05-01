@@ -16,7 +16,7 @@ typedef struct _fast_aleck_config {
 //
 // params:
 //   fast_aleck_config *config - the config to initialize
-void init_fast_aleck_config(fast_aleck_config *config);
+void fast_aleck_config_init(fast_aleck_config *config);
 
 // params:
 //   char *in - the unenhanced input string

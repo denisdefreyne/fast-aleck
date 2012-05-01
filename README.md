@@ -52,4 +52,3 @@ To do
 
 * Implement Widon't for other block elements (e.g. `h1` to `h6`)
 * Implement turning HTML off inside `<title>`
-* Rename `init_fast_aleck_config`

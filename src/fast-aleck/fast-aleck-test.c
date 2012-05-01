@@ -266,7 +266,7 @@ int main(void)
 void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, char *a_expected_output)
 {
 	fast_aleck_config config;
-	init_fast_aleck_config(&config);
+	fast_aleck_config_init(&config);
 	config.wrap_amps   = a_test_case->wrap_amps;
 	config.wrap_caps   = a_test_case->wrap_caps;
 	config.wrap_quotes = a_test_case->wrap_quotes;
