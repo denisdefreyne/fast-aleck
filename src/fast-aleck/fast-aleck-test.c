@@ -154,6 +154,8 @@ int main(void)
 		"<script>a",
 		"<script>a");
 
+	// WRAP AMPS TESTS
+
 	test_case.wrap_amps = 1;
 
 	fast_aleck_test(&test_case,
@@ -163,6 +165,30 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"Ampersands &amp; More",
 		"Ampersands <span class=\"amp\">&amp;</span> More");
+
+	test_case.wrap_amps = 0;
+
+	// WRAP QUOTES TESTS
+
+	test_case.wrap_quotes = 1;
+
+	fast_aleck_test(&test_case,
+		"There's a hole in the sky.",
+		"There’s a hole in the sky.");
+
+	fast_aleck_test(&test_case,
+		"'There's a hole in the sky', he said. 'Don't be silly', she said.",
+		"<span class=\"quo\">‘</span>There’s a hole in the sky’, he said. ‘Don’t be silly’, she said.");
+
+	fast_aleck_test(&test_case,
+		"\"There's a hole in the sky\", he said. \"Don't be silly\", she said.",
+		"<span class=\"dquo\">“</span>There’s a hole in the sky”, he said. “Don’t be silly”, she said.");
+
+	fast_aleck_test(&test_case,
+		"\"Here.\"<p>\"Here.\" \"Not here.\"<p>\"Here.\"",
+		"<span class=\"dquo\">“</span>Here.”<p><span class=\"dquo\">”</span>Here.” “Not here.”<p><span class=\"dquo\">”</span>Here.”");
+
+	test_case.wrap_quotes = 0;
 
 	return (test_case.fails > 0 ? 1 : 0);
 }

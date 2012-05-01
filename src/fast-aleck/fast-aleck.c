@@ -212,8 +212,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool in_kbd    = 0;
 	fa_bool in_pre    = 0;
 	fa_bool in_script = 0;
-
 	fa_bool end_tag_slash_detected = 0;
+	fa_bool is_at_start_of_run     = 1;
 
 	for (; *in; ++in)
 	{
@@ -252,16 +252,16 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		else if (*in == '\'' && !off)
 		{
 			if (in == a_in || _fa_should_open_quote(*(in-1)))
-				out += _fa_write_single_quote_start(out, a_config.wrap_quotes);
+				out += _fa_write_single_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
 			else
-				out += _fa_write_single_quote_end(out, a_config.wrap_quotes);
+				out += _fa_write_single_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
 		}
 		else if (*in == '"' && !off)
 		{
 			if (in == a_in || _fa_should_open_quote(*(in-1)))
-				out += _fa_write_double_quote_start(out, a_config.wrap_quotes);
+				out += _fa_write_double_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
 			else
-				out += _fa_write_double_quote_end(out, a_config.wrap_quotes);
+				out += _fa_write_double_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
 		}
 		else if (*in == '<')
 		{
@@ -275,6 +275,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		}
 		else
 			*out++ = *in;
+		is_at_start_of_run = 0;
 		continue;
 
 	UP_STATE_DOT:
@@ -341,6 +342,12 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			memcpy(out, "![CDATA[", 8);
 			out += 8;
 			state = _fa_state_cdata;
+		}
+		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
+		{
+			*out++ = *in;
+			state = _fa_state_tag;
+			is_at_start_of_run = 1;
 		}
 		else if (0 == strncmp(in, "code", 4) && (isspace(*(in+4)) || *(in+4) == '>')) 
 		{
