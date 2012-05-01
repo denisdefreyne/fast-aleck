@@ -1,4 +1,4 @@
-language: ruby
+language: erlang # don't abuse the ruby servers
 install:
   - sudo apt-get -qq install cmake
 script:
