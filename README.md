@@ -50,5 +50,4 @@ If you intend to use the Ruby bindings, copy `libfast-aleck.so` to a public loca
 To do
 -----
 
-* Implement Widon't for other block elements (e.g. `h1` to `h6`)
 * Implement turning HTML off inside `<title>`

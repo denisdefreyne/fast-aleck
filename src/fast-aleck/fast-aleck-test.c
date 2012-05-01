@@ -248,6 +248,14 @@ int main(void)
 		"<blockquote>Foo bar baz.</blockquote><blockquote>Woof meow moo.</blockquote>",
 		"<blockquote>Foo bar&nbsp;baz.</blockquote><blockquote>Woof meow&nbsp;moo.</blockquote>");
 
+	fast_aleck_test(&test_case,
+		"<dd>Foo bar baz.</dd><dd>Woof meow moo.</dd>",
+		"<dd>Foo bar&nbsp;baz.</dd><dd>Woof meow&nbsp;moo.</dd>");
+
+	fast_aleck_test(&test_case,
+		"<dt>Foo bar baz.</dt><dt>Woof meow moo.</dt>",
+		"<dt>Foo bar&nbsp;baz.</dt><dt>Woof meow&nbsp;moo.</dt>");
+
 	test_case.widont = 0;
 
 	// WRAP CAPS TEST

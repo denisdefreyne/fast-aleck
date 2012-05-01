@@ -424,12 +424,26 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			memcpy(out, "blockquote", 10);
 			out += 10;
 		}
+		else if (0 == strncmp(in, "dd", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			in += 1;
+			memcpy(out, "dd", 2);
+			out += 2;
+		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
 			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
 			in += 2;
 			memcpy(out, "div", 3);
 			out += 3;
+		}
+		else if (0 == strncmp(in, "dt", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config);
+			in += 1;
+			memcpy(out, "dt", 2);
+			out += 2;
 		}
 		else if ('h' == *in && *(in+1) >= '1' && *(in+1) <= '6' && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
