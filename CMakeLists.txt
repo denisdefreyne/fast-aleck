@@ -24,5 +24,8 @@ set(
 )
 
 add_executable(fast-aleck ${SOURCES_EXECUTABLE})
+
 add_executable(fast-aleck-test ${SOURCES_TEST})
+
 add_library(libfast-aleck SHARED ${SOURCES_LIBRARY})
+SET_TARGET_PROPERTIES(libfast-aleck PROPERTIES PREFIX "")
