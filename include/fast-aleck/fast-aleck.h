@@ -11,6 +11,12 @@ typedef struct _fast_aleck_config {
 	fa_bool widont;
 } fast_aleck_config;
 
+// Initialize a config to the default parameters
+//
+// params:
+//   fast_aleck_config *config - the config to initialize
+void init_fast_aleck_config(fast_aleck_config *config);
+
 // params:
 //   char *in - the unenhanced input string
 //   size_t in_size - the size, in bytes, of the unenhanced input string
