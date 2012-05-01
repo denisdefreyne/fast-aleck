@@ -4,6 +4,10 @@
 
 #include <fast-aleck/fast-aleck.h>
 
+void init_fast_aleck_config(fast_aleck_config *config) {
+    bzero(config, sizeof(fast_aleck_config));
+}
+
 enum _fa_state
 {
 	_fa_state_start,
