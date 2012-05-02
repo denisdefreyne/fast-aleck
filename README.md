@@ -50,6 +50,12 @@ There will be three executables in the build directory once that is finished:
 
 If you intend to use the Ruby bindings, copy `libfast-aleck.so` to a public location (such as `/usr/local/lib`) or into the directory where you are executing Ruby from. For instance, if you want to use Fast Aleck with nanoc, you can copy `libfast-aleck.so` into the site directory (not in `./lib`).
 
+Related Projects
+----------------
+
+* fast-aleck-ruby - Ruby bindings for Fast Aleck (see the ruby/ dir)
+* [fast-aleck-hs](https://github.com/jaspervdj/fast-aleck-hs) - Haskell bindings for Fast Aleck
+
 To do
 -----
 
