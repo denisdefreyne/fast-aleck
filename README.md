@@ -7,7 +7,7 @@ Fast Aleck is **alpha quality**. Expect things to break. If it breaks, please do
 How fast is it really?
 ----------------------
 
-Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced (see ruby/bench.rb):
+Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced 5000 times (see ruby/bench.rb):
 
 	Rubypants                   2min 15.77s
 	Typogruby                  50min 23.29s
