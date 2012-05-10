@@ -232,6 +232,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool in_kbd    = 0;
 	fa_bool in_pre    = 0;
 	fa_bool in_script = 0;
+	fa_bool in_title  = 0;
 	fa_bool end_tag_slash_detected  = 0;
 	fa_bool is_at_start_of_run      = 1;
 	fa_bool at_least_one_char_found = 0;
@@ -285,30 +286,30 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		else if (*in == '\'' && !off)
 		{
 			if (!out_last_char || _fa_should_open_quote(*out_last_char))
-				out += _fa_write_single_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
+				out += _fa_write_single_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
 			else
-				out += _fa_write_single_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
+				out += _fa_write_single_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
 		}
 		else if (*in == '"' && !off)
 		{
 			if (!out_last_char || _fa_should_open_quote(*out_last_char))
-				out += _fa_write_double_quote_start(out, is_at_start_of_run && a_config.wrap_quotes);
+				out += _fa_write_double_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
 			else
-				out += _fa_write_double_quote_end(out, is_at_start_of_run && a_config.wrap_quotes);
+				out += _fa_write_double_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
 		}
 		else if (*in == '<')
 		{
 			*out++ = *in;
 			state = _fa_state_tag_start;
 		}
-		else if (*in == '&' && !off && a_config.wrap_amps && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
+		else if (*in == '&' && !off && a_config.wrap_amps && !in_title && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
 		{
 			in += 4;
 			out += _fa_write_wrapped_amp(out);
 		}
 		else
 		{
-			if (a_config.wrap_caps)
+			if (a_config.wrap_caps && !in_title)
 			{
 				if (isupper(*in) || isdigit(*in))
 				{
@@ -422,7 +423,6 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		{
 			end_tag_slash_detected = 1;
 			*out++ = *in;
-			continue;
 		}
 		else if (!end_tag_slash_detected && 0 == strncmp(in, "![CDATA[", 8))
 		{
@@ -430,6 +430,15 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			memcpy(out, "![CDATA[", 8);
 			out += 8;
 			state = _fa_state_cdata;
+		}
+		// special start/end tags
+		else if (0 == strncmp(in, "title", 5) && (isspace(*(in+5)) || *(in+5) == '>'))
+		{
+			in_title = !end_tag_slash_detected;
+			state = _fa_state_tag;
+			in += 4;
+			memcpy(out, "title", 5);
+			out += 5;
 		}
 		// start/end tags for resetting elements
 		else if (0 == strncmp(in, "blockquote", 10) && (isspace(*(in+10)) || *(in+10) == '>'))

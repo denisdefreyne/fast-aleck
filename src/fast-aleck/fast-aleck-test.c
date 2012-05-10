@@ -194,6 +194,10 @@ int main(void)
 		"Ampersands &amp; More",
 		"Ampersands <span class=\"amp\">&amp;</span> More");
 
+	fast_aleck_test(&test_case,
+		"A &amp; B <title>C &amp; D</title> E &amp; F",
+		"A <span class=\"amp\">&amp;</span> B <title>C &amp; D</title> E <span class=\"amp\">&amp;</span> F");
+
 	test_case.wrap_amps = 0;
 
 	// WRAP QUOTES TESTS
@@ -223,6 +227,10 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"\"Here.\"<div>\"Here.\" \"Not here.\"<div>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">“</span>Here.” “Not here.”<div><span class=\"dquo\">“</span>Here.”");
+
+	fast_aleck_test(&test_case,
+		"<title>'There's a hole in the sky'</title>",
+		"<title>‘There’s a hole in the sky’</title>");
 
 	// TODO h1, h2, ..., h6
 
@@ -293,6 +301,10 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"I have 13 EC2 instances but no static AMIs.",
 		"I have 13 <span class=\"caps\">EC2</span> instances but no static <span class=\"caps\">AMI</span>s.");
+
+	fast_aleck_test(&test_case,
+		"<title>Hello, this is DENIS speaking!</title>",
+		"<title>Hello, this is DENIS speaking!</title>");
 
 	test_case.wrap_caps = 0;
 

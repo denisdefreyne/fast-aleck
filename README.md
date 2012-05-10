@@ -55,8 +55,3 @@ Related Projects
 
 * fast-aleck-ruby - Ruby bindings for Fast Aleck (see the ruby/ dir)
 * [fast-aleck-hs](https://github.com/jaspervdj/fast-aleck-hs) - Haskell bindings for Fast Aleck
-
-To do
------
-
-* Implement turning HTML off inside `<title>`
