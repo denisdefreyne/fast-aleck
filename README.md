@@ -52,5 +52,5 @@ If you intend to use the Ruby bindings, copy `libfast-aleck.so` to a public loca
 Related Projects
 ----------------
 
-* fast-aleck-ruby - Ruby bindings for Fast Aleck (see the ruby/ dir)
+* [fast-aleck-ruby](https://github.com/ddfreyne/fast-aleck-ruby) - Ruby bindings for Fast Aleck
 * [fast-aleck-hs](https://github.com/jaspervdj/fast-aleck-hs) - Haskell bindings for Fast Aleck
