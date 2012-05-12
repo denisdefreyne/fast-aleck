@@ -248,12 +248,16 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	char *in_start = a_in;
 	char *in       = a_in;
 
-	fa_bool off       = 0;
-	fa_bool in_code   = 0;
-	fa_bool in_kbd    = 0;
-	fa_bool in_pre    = 0;
-	fa_bool in_script = 0;
-	fa_bool in_title  = 0;
+	fa_bool off = 0;
+	fa_bool in_code     = 0;
+	fa_bool in_kbd      = 0;
+	fa_bool in_pre      = 0;
+	fa_bool in_script   = 0;
+	fa_bool in_samp     = 0;
+	fa_bool in_var      = 0;
+	fa_bool in_math     = 0;
+	fa_bool in_textarea = 0;
+	fa_bool in_title    = 0;
 	fa_bool end_tag_slash_detected  = 0;
 	fa_bool is_at_start_of_run      = 1;
 	fa_bool at_least_one_char_found = 0;
@@ -527,78 +531,39 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			*out++ = *in;
 		}
 		// start/end tags for excluded elements
-		else if (0 == strncmp(in, "code", 4) && (isspace(*(in+4)) || *(in+4) == '>')) 
-		{
-			in += 3;
-			memcpy(out, "code", 4);
-			out += 4;
-			state = _fa_state_tag;
-
-			if (end_tag_slash_detected)
-			{
-				in_code = 0;
-				off     = in_kbd || in_pre || in_script;
-			}
-			else
-			{
-				in_code = 1;
-				off     = 1;
-			}
-		}
-		else if (0 == strncmp(in, "kbd", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
-		{
-			in += 2;
-			memcpy(out, "kbd", 3);
-			out += 3;
-			state = _fa_state_tag;
-
-			if (end_tag_slash_detected)
-			{
-				in_kbd = 0;
-				off    = in_code || in_pre || in_script;
-			}
-			else
-			{
-				in_kbd = 1;
-				off    = 1;
-			}
-		}
-		else if (0 == strncmp(in, "pre", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
-		{
-			in += 2;
-			memcpy(out, "pre", 3);
-			out += 3;
-			state = _fa_state_tag;
-
-			if (end_tag_slash_detected)
-			{
-				in_pre = 0;
-				off    = in_code || in_kbd || in_script;
-			}
-			else
-			{
-				in_pre = 1;
-				off    = 1;
-			}
-		}
-		else if (0 == strncmp(in, "script", 6) && (isspace(*(in+6)) || *(in+6) == '>'))
-		{
-			in += 5;
-			memcpy(out, "script", 6);
-			out += 6;
-			state = _fa_state_tag;
-
-			if (end_tag_slash_detected)
-			{
-				in_script = 0;
-				off       = in_code || in_kbd || in_pre;
-			}
-			else
-			{
-				in_script = 1;
-				off       = 1;
-			}
-		}
+#define _FA_MATCHES_EXCLUDED_ELEMENT(s) (0 == strncmp(in, s, strlen(s)) && (isspace(*(in+strlen(s))) || *(in+strlen(s)) == '>'))
+#define _FA_HANDLE_EXCLUDED_ELEMENT(s, flag) { \
+	in += strlen(s)-1; \
+	memcpy(out, s, strlen(s)); \
+	out += strlen(s); \
+	state = _fa_state_tag; \
+	if (end_tag_slash_detected) \
+	{ \
+		flag = 0; \
+		off  = in_code || in_kbd || in_pre || in_script || in_samp || in_var || in_math || in_textarea; \
+	} \
+	else \
+	{ \
+		flag = 1; \
+		off  = 1; \
+	} \
+}
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("code"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("code", in_code)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("kbd"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("kbd", in_kbd)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("pre"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("pre", in_pre)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("script"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("script", in_script)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("samp"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("samp", in_samp)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("var"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("var", in_var)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("math"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("math", in_math)
+		else if (_FA_MATCHES_EXCLUDED_ELEMENT("textarea"))
+			_FA_HANDLE_EXCLUDED_ELEMENT("textarea", in_textarea)
 		else
 		{
 			*out++ = *in;

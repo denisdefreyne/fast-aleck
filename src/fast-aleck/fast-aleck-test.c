@@ -103,6 +103,22 @@ int main(void)
 		"Before… yes. <kbd>In kbd... no.</kbd> After… yes.");
 
 	fast_aleck_test(&test_case,
+		"Before... <samp>In samp... </samp> After...",
+		"Before… <samp>In samp... </samp> After…");
+
+	fast_aleck_test(&test_case,
+		"Before... <var>In var... </var> After...",
+		"Before… <var>In var... </var> After…");
+
+	fast_aleck_test(&test_case,
+		"Before... <math>In math... </math> After...",
+		"Before… <math>In math... </math> After…");
+
+	fast_aleck_test(&test_case,
+		"Before... <textarea>In textarea... </textarea> After...",
+		"Before… <textarea>In textarea... </textarea> After…");
+
+	fast_aleck_test(&test_case,
 		"Before... yes. <p>In something else (like p)... yes!</p> After... yes.",
 		"Before… yes. <p>In something else (like p)… yes!</p> After… yes.");
 
