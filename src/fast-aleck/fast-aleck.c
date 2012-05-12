@@ -216,6 +216,27 @@ static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, 
 	*last_char = NULL;
 }
 
+#define _FA_WRAP_CAPS \
+	if (!in_title && a_config.wrap_caps && at_least_one_char_found && out_last_caps && out_last_caps - out_first_caps > 1) \
+		_fa_wrap_caps(&out_first_caps, &out_last_caps, &out); \
+	out_first_caps = NULL; \
+	out_last_caps = NULL;
+
+static inline void _fa_wrap_caps(char **out_first_caps, char **out_last_caps, char **out)
+{
+	char *s1 = "<span class=\"caps\">";
+	char *s2 = "</span>";
+
+	memmove(*out_first_caps + strlen(s1), *out_first_caps, *out_last_caps + 1 - *out_first_caps);
+	memcpy(*out_first_caps, s1, strlen(s1));
+	*out += strlen(s1);
+	memcpy(*out, s2, strlen(s2));
+	*out += strlen(s2);
+
+	*out_first_caps = NULL;
+	*out_last_caps  = NULL;
+}
+
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_len)
 {
 	enum _fa_state state = _fa_state_start;
@@ -279,90 +300,108 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		}
 
 	UP_STATE_START:
-		if (*in == '.' && !off)
-			state = _fa_state_dot;
-		else if (*in == '-' && !off)
-			state = _fa_state_dash;
-		else if (*in == '\'' && !off)
+		if (!off)
 		{
-			if (!out_last_char || _fa_should_open_quote(*out_last_char))
-				out += _fa_write_single_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
-			else
-				out += _fa_write_single_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
-		}
-		else if (*in == '"' && !off)
-		{
-			if (!out_last_char || _fa_should_open_quote(*out_last_char))
-				out += _fa_write_double_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
-			else
-				out += _fa_write_double_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
-		}
-		else if (*in == '<')
-		{
-			*out++ = *in;
-			state = _fa_state_tag_start;
-		}
-		else if (*in == '&' && !off && a_config.wrap_amps && !in_title && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
-		{
-			in += 4;
-			out += _fa_write_wrapped_amp(out);
+			switch(*in)
+			{
+				case 'a': case 'b': case 'c': case 'd': case 'e':
+				case 'f': case 'g': case 'h': case 'i': case 'j':
+				case 'k': case 'l': case 'm': case 'n': case 'o':
+				case 'p': case 'q': case 'r': case 's': case 't':
+				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z': 
+					_FA_WRAP_CAPS;
+					out_last_char = out;
+					*out++ = *in;
+					break;
+
+				case 'A': case 'B': case 'C': case 'D': case 'E': 
+				case 'F': case 'G': case 'H': case 'I': case 'J': 
+				case 'K': case 'L': case 'M': case 'N': case 'O': 
+				case 'P': case 'Q': case 'R': case 'S': case 'T': 
+				case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z': 
+					if (!out_first_caps)
+						out_first_caps = out;
+					out_last_caps = out;
+					at_least_one_char_found = 1;
+					out_last_char = out;
+					*out++ = *in;
+					break;
+
+				case '1': case '2': case '3': case '4': case '5': 
+				case '6': case '7': case '8': case '9': case '0': 
+					if (out_first_caps)
+						out_last_caps = out;
+					out_last_char = out;
+					*out++ = *in;
+					break;
+
+				case '\t': case ' ': case '\r': case '\n':
+					_FA_WRAP_CAPS;
+					out_last_char = out;
+					out_last_space = out;
+					*out++ = *in;
+					break;
+
+				case '.':
+					_FA_WRAP_CAPS;
+					state = _fa_state_dot;
+					break;
+
+				case '-':
+					_FA_WRAP_CAPS;
+					state = _fa_state_dash;
+					break;
+
+				case '\'':
+					_FA_WRAP_CAPS;
+					if (!out_last_char || _fa_should_open_quote(*out_last_char))
+						out += _fa_write_single_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
+					else
+						out += _fa_write_single_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
+					break;
+				
+				case '"':
+					_FA_WRAP_CAPS;
+					if (!out_last_char || _fa_should_open_quote(*out_last_char))
+						out += _fa_write_double_quote_start(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
+					else
+						out += _fa_write_double_quote_end(out, is_at_start_of_run && !in_title && a_config.wrap_quotes);
+					break;
+						
+				case '<':
+					_FA_WRAP_CAPS;
+					*out++ = *in;
+					state = _fa_state_tag_start;
+					break;
+
+				case '&':
+					_FA_WRAP_CAPS;
+					if (a_config.wrap_amps && !in_title && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
+					{
+						in += 4;
+						out += _fa_write_wrapped_amp(out);
+						break;
+					}
+					else
+						*out++ = *in;
+					break;
+
+				default:
+					_FA_WRAP_CAPS;
+					out_last_char = out;
+					*out++ = *in;
+					break;
+			}
 		}
 		else
 		{
-			if (a_config.wrap_caps && !in_title)
+			if (*in == '<')
 			{
-				if (isupper(*in) || isdigit(*in))
-				{
-					if (isupper(*in))
-						at_least_one_char_found = 1;
-					out_last_caps = out;
-					if (!out_first_caps)
-						out_first_caps = out;
-					*out++ = *in;
-				}
-				else if (at_least_one_char_found && out_last_caps && out_last_caps - out_first_caps > 1)
-				{
-					char *s1 = "<span class=\"caps\">";
-					char *s2 = "</span>";
-
-					// move out so that s1 fits
-					memmove(out_first_caps + strlen(s1), out_first_caps, out_last_caps + 1 - out_first_caps);
-
-					// write s1 before out
-					memcpy(out_first_caps, s1, strlen(s1));
-
-					// move right after out
-					out += strlen(s1);
-
-					// write s2
-					memcpy(out, s2, strlen(s2));
-
-					// move to end
-					out += strlen(s2);
-
-					// write whatever we ignored so far
-					*out++ = *in;
-
-					out_first_caps = NULL;
-					out_last_caps  = NULL;
-					at_least_one_char_found = 0;
-				}
-				else
-				{
-					*out++ = *in;
-					out_first_caps = NULL;
-					out_last_caps  = NULL;
-					at_least_one_char_found = 0;
-				}
-			}
-			else if (isspace(*in))
-			{
-				out_last_space = out;
 				*out++ = *in;
+				state = _fa_state_tag_start;
 			}
 			else
 				*out++ = *in;
-			out_last_char = out-1;
 		}
 		is_at_start_of_run = 0;
 		continue;

@@ -290,6 +290,10 @@ int main(void)
 
 	test_case.widont = 0;
 
+	fast_aleck_test(&test_case,
+		"<dt>We don't Widon't.</dt>",
+		"<dt>We don’t Widon’t.</dt>");
+
 	// WRAP CAPS TEST
 
 	test_case.wrap_caps = 1;
@@ -297,6 +301,10 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"Hello, this is DENIS speaking!",
 		"Hello, this is <span class=\"caps\">DENIS</span> speaking!");
+
+	fast_aleck_test(&test_case,
+		"DENIS's pants.",
+		"<span class=\"caps\">DENIS</span>’s pants.");
 
 	fast_aleck_test(&test_case,
 		"I have 13 EC2 instances but no static AMIs.",
@@ -307,6 +315,10 @@ int main(void)
 		"<title>Hello, this is DENIS speaking!</title>");
 
 	test_case.wrap_caps = 0;
+
+	fast_aleck_test(&test_case,
+		"Do NOT wrap caps if I don't ask to!",
+		"Do NOT wrap caps if I don’t ask to!");
 
 	return (test_case.fails > 0 ? 1 : 0);
 }
