@@ -336,6 +336,14 @@ int main(void)
 		"<p>one<br>\ntwo</p>",
 		"<p>one<br>\ntwo</p>");
 
+	fast_aleck_test(&test_case,
+		"<p>foo bar </p>",
+		"<p>foo&nbsp;bar </p>");
+
+	fast_aleck_test(&test_case,
+		"<p>foo  bar</p>",
+		"<p>foo&nbsp;bar</p>");
+
 	test_case.widont = 0;
 
 	fast_aleck_test(&test_case,
