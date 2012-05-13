@@ -328,10 +328,17 @@ int main(void)
 		"<li><span>line one</span></li>\n<li><span>line two</span></li>",
 		"<li><span>line&nbsp;one</span></li>\n<li><span>line&nbsp;two</span></li>");
 
-
 	fast_aleck_test(&test_case,
 		"<h1><a href='#'>why won't this widon't</a></h1>",
 		"<h1><a href='#'>why won’t this&nbsp;widon’t</a></h1>");
+
+	fast_aleck_test(&test_case,
+		"<p>foo bar </p>",
+		"<p>foo&nbsp;bar </p>");
+
+	fast_aleck_test(&test_case,
+		"<p>foo  bar</p>",
+		"<p>foo&nbsp;bar</p>");
 
 	test_case.widont = 0;
 
