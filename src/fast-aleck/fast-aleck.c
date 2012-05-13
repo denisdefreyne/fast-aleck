@@ -218,7 +218,7 @@ static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, 
 }
 
 #define _FA_WRAP_CAPS \
-	if (!in_title && a_config.wrap_caps && caps_found && out_last_caps && out_last_caps - out_first_caps > 1) \
+	if (!in_title && a_config.wrap_caps && caps_found && out_last_caps && out_last_caps - out_first_caps > 0) \
 		_fa_wrap_caps(&out_first_caps, &out_last_caps, &out); \
 	out_first_caps = NULL; \
 	out_last_caps = NULL;
