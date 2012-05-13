@@ -328,10 +328,13 @@ int main(void)
 		"<li><span>line one</span></li>\n<li><span>line two</span></li>",
 		"<li><span>line&nbsp;one</span></li>\n<li><span>line&nbsp;two</span></li>");
 
-
 	fast_aleck_test(&test_case,
 		"<h1><a href='#'>why won't this widon't</a></h1>",
 		"<h1><a href='#'>why won’t this&nbsp;widon’t</a></h1>");
+
+	fast_aleck_test(&test_case,
+		"<p>one<br>\ntwo</p>",
+		"<p>one<br>\ntwo</p>");
 
 	test_case.widont = 0;
 
@@ -358,7 +361,11 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"<title>Hello, this is DENIS speaking!</title>",
 		"<title>Hello, this is DENIS speaking!</title>");
-
+		
+	fast_aleck_test(&test_case,
+		"<p>MongoDB is better than PostgreSQL</p>",
+		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>");
+		
 	test_case.wrap_caps = 0;
 
 	fast_aleck_test(&test_case,
