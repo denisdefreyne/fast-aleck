@@ -351,6 +351,18 @@ int main(void)
 	return (test_case.fails > 0 ? 1 : 0);
 }
 
+static void _fa_puts_escaped(char *a_s)
+{
+	for (char *s = a_s; *s; ++s)
+	{
+		if ('\n' == *s)
+			fputs("\\n", stdout);
+		else
+			fputc(*s, stdout);
+	}
+	fputc('\n', stdout);
+}
+
 void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, char *a_expected_output)
 {
 	fast_aleck_config config;
@@ -366,9 +378,12 @@ void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, ch
 	if (0 != strcmp(a_expected_output, actual_output))
 	{
 		++a_test_case->fails;
-		fprintf(stdout, "not ok %i %s\n", a_test_case->count+1, a_input);
-		fprintf(stdout, "  Expected: %s\n", a_expected_output);
-		fprintf(stdout, "  Actual:   %s\n", actual_output);
+		fprintf(stdout, "not ok %i ", a_test_case->count+1);
+		_fa_puts_escaped(a_input);
+		fprintf(stdout, "  Expected: ");
+		_fa_puts_escaped(a_expected_output);
+		fprintf(stdout, "  Actual:   ");
+		_fa_puts_escaped(actual_output);
 	}
 	else if(strlen(actual_output) != out_len)
 	{
@@ -376,12 +391,12 @@ void fast_aleck_test(struct fast_aleck_test_case *a_test_case, char *a_input, ch
 		fprintf(stdout, "not ok %i %s\n", a_test_case->count+1, a_input);
 		fprintf(stdout, "  Length of returned string: %lu\n", strlen(actual_output));
 		fprintf(stdout, "  Returned length of string: %lu\n", out_len);
-
 	}
 	else
 	{
 		++a_test_case->passes;
-		fprintf(stdout, "ok %i %s\n", a_test_case->count+1, a_input);
+		fprintf(stdout, "ok %i ", a_test_case->count+1);
+		_fa_puts_escaped(a_input);
 	}
 
 	++a_test_case->count;
