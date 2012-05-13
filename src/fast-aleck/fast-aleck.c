@@ -498,6 +498,13 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			memcpy(out, "blockquote", 10);
 			out += 10;
 		}
+		else if (0 == strncmp(in, "br", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
+		{
+			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			in += 1;
+			memcpy(out, "br", 2);
+			out += 2;
+		}
 		else if (0 == strncmp(in, "dd", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
 			_fa_handle_tag(&in, &out, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
