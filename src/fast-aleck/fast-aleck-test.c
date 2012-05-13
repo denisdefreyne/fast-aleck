@@ -333,12 +333,28 @@ int main(void)
 		"<h1><a href='#'>why won’t this&nbsp;widon’t</a></h1>");
 
 	fast_aleck_test(&test_case,
+		"<p>foo bar<br>baz qux</p>",
+		"<p>foo&nbsp;bar<br>baz&nbsp;qux</p>");
+
+	fast_aleck_test(&test_case,
 		"<p>one<br>\ntwo</p>",
 		"<p>one<br>\ntwo</p>");
 
 	fast_aleck_test(&test_case,
+		"<p>foo bar\n<br>\nbaz</p>",
+		"<p>foo&nbsp;bar\n<br>\nbaz</p>");
+
+	fast_aleck_test(&test_case,
 		"<p>foo bar </p>",
 		"<p>foo&nbsp;bar </p>");
+
+	fast_aleck_test(&test_case,
+		"<p>foo  bar</p>",
+		"<p>foo&nbsp;bar</p>");
+
+	fast_aleck_test(&test_case,
+		"<p> foo</p>",
+		"<p> foo</p>");
 
 	fast_aleck_test(&test_case,
 		"<p>foo  bar</p>",
