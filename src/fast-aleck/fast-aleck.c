@@ -217,7 +217,7 @@ static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, 
 }
 
 #define _FA_WRAP_CAPS \
-	if (!in_title && a_config.wrap_caps && at_least_one_char_found && out_last_caps && out_last_caps - out_first_caps > 1) \
+	if (!in_title && a_config.wrap_caps && caps_found && out_last_caps && out_last_caps - out_first_caps > 1) \
 		_fa_wrap_caps(&out_first_caps, &out_last_caps, &out); \
 	out_first_caps = NULL; \
 	out_last_caps = NULL;
@@ -249,6 +249,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	char *in       = a_in;
 
 	fa_bool off = 0;
+
 	fa_bool in_code     = 0;
 	fa_bool in_kbd      = 0;
 	fa_bool in_pre      = 0;
@@ -258,9 +259,10 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool in_math     = 0;
 	fa_bool in_textarea = 0;
 	fa_bool in_title    = 0;
-	fa_bool end_tag_slash_detected  = 0;
-	fa_bool is_at_start_of_run      = 1;
-	fa_bool at_least_one_char_found = 0;
+
+	fa_bool end_tag_slash_detected = 0;
+	fa_bool is_at_start_of_run     = 1;
+	fa_bool caps_found             = 0;
 
 	char *out_last_space = NULL;
 	char *out_first_caps = NULL;
@@ -326,7 +328,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					if (!out_first_caps)
 						out_first_caps = out;
 					out_last_caps = out;
-					at_least_one_char_found = 1;
+					caps_found = 1;
 					out_last_char = out;
 					*out++ = *in;
 					break;
