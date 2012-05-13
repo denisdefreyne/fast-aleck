@@ -209,11 +209,11 @@ static inline void _fa_handle_tag(char **in, char **out, char **out_last_space, 
 		memmove(*out_last_space+6-1, *out_last_space, *out+1-*out_last_space);
 		memcpy(*out_last_space, "&nbsp;", 6);
 		*out += 5;
-		*out_last_space = NULL;
-		*char_found = 0;
 	}
 	*state = _fa_state_tag;
 	*is_at_start_of_run = 1;
+	*char_found = 0;
+	*out_last_space = NULL;
 	*last_char = NULL;
 }
 
@@ -583,7 +583,6 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		if (*in == '>')
 		{
 			end_tag_slash_detected = 0;
-			out_last_space = NULL;
 			state = _fa_state_start;
 		}
 		else if (*in == '\'')
