@@ -304,6 +304,18 @@ int main(void)
 		"<dt>Foo bar baz.</dt><dt>Woof meow moo.</dt>",
 		"<dt>Foo bar&nbsp;baz.</dt><dt>Woof meow&nbsp;moo.</dt>");
 
+	fast_aleck_test(&test_case,
+		"<ol>\n<li>This is a list item</li>\n</ol>",
+		"<ol>\n<li>This is a list&nbsp;item</li>\n</ol>");
+
+	fast_aleck_test(&test_case,
+		"<section>\n<h1>Title!</h1>\n</section>",
+		"<section>\n<h1>Title!</h1>\n</section>");
+
+	fast_aleck_test(&test_case,
+		"<p>Paragraph one</p>\n<p>Paragraph two</p>",
+		"<p>Paragraph&nbsp;one</p>\n<p>Paragraph&nbsp;two</p>");
+
 	test_case.widont = 0;
 
 	fast_aleck_test(&test_case,
