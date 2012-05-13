@@ -316,6 +316,15 @@ int main(void)
 		"<p>Paragraph one</p>\n<p>Paragraph two</p>",
 		"<p>Paragraph&nbsp;one</p>\n<p>Paragraph&nbsp;two</p>");
 
+	fast_aleck_test(&test_case,
+		"<li><span>line one</span></li>\n<li><span>line two</span></li>",
+		"<li><span>line&nbsp;one</span></li>\n<li><span>line&nbsp;two</span></li>");
+
+
+	fast_aleck_test(&test_case,
+		"<h1><a href='#'>why won't this widon't</a></h1>",
+		"<h1><a href='#'>why won't this&nbsp;widon't</a></h1>");
+
 	test_case.widont = 0;
 
 	fast_aleck_test(&test_case,
