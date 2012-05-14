@@ -356,6 +356,14 @@ int main(void)
 		"<p> foo</p>",
 		"<p> foo</p>");
 
+	fast_aleck_test(&test_case,
+		"<p>foo &amp;</p>",
+		"<p>foo&nbsp;&amp;</p>");
+
+	fast_aleck_test(&test_case,
+		"<p>foo &amp; bar</p>",
+		"<p>foo &amp;&nbsp;bar</p>");
+
 	test_case.widont = 0;
 
 	fast_aleck_test(&test_case,
