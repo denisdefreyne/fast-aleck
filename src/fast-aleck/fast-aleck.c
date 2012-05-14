@@ -203,20 +203,19 @@ static inline size_t _fa_finish(char *a_out, enum _fa_state a_state)
 }
 
 #define _FA_HANDLE_BLOCK_TAG \
-	printf("out start   = %s\n", out_start); \
-	printf("last before = %s\n", out_last_char_before_space); \
-	printf("last after  = %s\n", out_last_char_after_space); \
-	if (a_config.widont && out_last_char_before_space && letter_found && out_last_space) \
+	if (a_config.widont && out_last_char_before_space && letter_found && out_last_real_space) \
 	{ \
-		memmove(out_first_space + 6, out_last_space + 1, out - out_last_space); \
-		memcpy(out_first_space, "&nbsp;", 6); \
-		out += 5 - (out_last_space - out_first_space); \
+		memmove(out_first_real_space + 6, out_last_real_space + 1, out - out_last_real_space); \
+		memcpy(out_first_real_space, "&nbsp;", 6); \
+		out += 5 - (out_last_real_space - out_first_real_space); \
 	} \
 	state = _fa_state_tag; \
 	is_at_start_of_run = 1; \
 	letter_found = 0; \
 	out_first_space = NULL; \
 	out_last_space  = NULL; \
+	out_first_real_space = NULL; \
+	out_last_real_space = NULL; \
 	out_last_char_after_space = NULL; \
 	out_last_char = NULL;
 
@@ -271,7 +270,9 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	fa_bool chars_found_after_space = 0;
 
 	char *out_first_space = NULL;
+	char *out_first_real_space = NULL;
 	char *out_last_space  = NULL;
+	char *out_last_real_space = NULL;
 	char *out_first_caps  = NULL;
 	char *out_last_caps   = NULL;
 	char *out_last_char   = NULL;
@@ -296,6 +297,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 			out += diff;
 			if (out_first_space) out_first_space += diff;
 			if (out_last_space)  out_last_space  += diff;
+			if (out_first_real_space) out_first_real_space += diff;
+			if (out_last_real_space)  out_last_real_space  += diff;
 			if (out_first_caps)  out_first_caps  += diff;
 			if (out_last_caps)   out_last_caps   += diff;
 			if (out_last_char)   out_last_char   += diff;
@@ -330,6 +333,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					letter_found = 1;
 					chars_found_after_space = 1;
 					out_last_char_after_space = out;
+					out_first_real_space = out_first_space;
+					out_last_real_space = out_last_space;
 					*out++ = *in;
 					break;
 
@@ -346,6 +351,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					caps_found = 1;
 					out_last_char = out;
 					out_last_char_after_space = out;
+					out_first_real_space = out_first_space;
+					out_last_real_space = out_last_space;
 					*out++ = *in;
 					break;
 
@@ -357,6 +364,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					letter_found = 1;
 					chars_found_after_space = 1;
 					out_last_char_after_space = out;
+					out_first_real_space = out_first_space;
+					out_last_real_space = out_last_space;
 					*out++ = *in;
 					break;
 
