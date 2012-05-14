@@ -202,21 +202,23 @@ static inline size_t _fa_finish(char *a_out, enum _fa_state a_state)
 	return out - a_out - 1;
 }
 
-static inline void _fa_handle_tag(char **in, char **out, char **out_first_space, char **out_last_space, char *is_at_start_of_run, enum _fa_state *state, fast_aleck_config config, char **last_char, char *letter_found)
-{
-	if (config.widont && *letter_found && *out_last_space)
-	{
-		memmove(*out_first_space + 6, *out_last_space + 1, *out - *out_last_space);
-		memcpy(*out_first_space, "&nbsp;", 6);
-		*out += 5 - (*out_last_space - *out_first_space);
-	}
-	*state = _fa_state_tag;
-	*is_at_start_of_run = 1;
-	*letter_found = 0;
-	*out_first_space = NULL;
-	*out_last_space  = NULL;
-	*last_char = NULL;
-}
+#define _FA_HANDLE_BLOCK_TAG \
+	printf("out start   = %s\n", out_start); \
+	printf("last before = %s\n", out_last_char_before_space); \
+	printf("last after  = %s\n", out_last_char_after_space); \
+	if (a_config.widont && out_last_char_before_space && letter_found && out_last_space) \
+	{ \
+		memmove(out_first_space + 6, out_last_space + 1, out - out_last_space); \
+		memcpy(out_first_space, "&nbsp;", 6); \
+		out += 5 - (out_last_space - out_first_space); \
+	} \
+	state = _fa_state_tag; \
+	is_at_start_of_run = 1; \
+	letter_found = 0; \
+	out_first_space = NULL; \
+	out_last_space  = NULL; \
+	out_last_char_after_space = NULL; \
+	out_last_char = NULL;
 
 #define _FA_WRAP_CAPS \
 	if (!in_title && a_config.wrap_caps && caps_found && out_last_caps && out_last_caps - out_first_caps > 0) \
@@ -273,6 +275,8 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 	char *out_first_caps  = NULL;
 	char *out_last_caps   = NULL;
 	char *out_last_char   = NULL;
+	char *out_last_char_before_space = NULL;
+	char *out_last_char_after_space  = NULL;
 
 	for (; *in; ++in)
 	{
@@ -325,6 +329,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					out_last_char = out;
 					letter_found = 1;
 					chars_found_after_space = 1;
+					out_last_char_after_space = out;
 					*out++ = *in;
 					break;
 
@@ -340,6 +345,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					chars_found_after_space = 1;
 					caps_found = 1;
 					out_last_char = out;
+					out_last_char_after_space = out;
 					*out++ = *in;
 					break;
 
@@ -350,6 +356,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					out_last_char = out;
 					letter_found = 1;
 					chars_found_after_space = 1;
+					out_last_char_after_space = out;
 					*out++ = *in;
 					break;
 
@@ -362,6 +369,9 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 						out_first_space = out;
 					out_last_space = out;
 					chars_found_after_space = 0;
+					if (out_last_char_after_space)
+						out_last_char_before_space = out_last_char_after_space;
+					out_last_char_after_space = NULL;
 					*out++ = *in;
 					break;
 
@@ -512,55 +522,55 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		// start/end tags for resetting elements
 		else if (0 == strncmp(in, "blockquote", 10) && (isspace(*(in+10)) || *(in+10) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 9;
 			memcpy(out, "blockquote", 10);
 			out += 10;
 		}
 		else if (0 == strncmp(in, "br", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 1;
 			memcpy(out, "br", 2);
 			out += 2;
 		}
 		else if (0 == strncmp(in, "dd", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 1;
 			memcpy(out, "dd", 2);
 			out += 2;
 		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 2;
 			memcpy(out, "div", 3);
 			out += 3;
 		}
 		else if (0 == strncmp(in, "dt", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 1;
 			memcpy(out, "dt", 2);
 			out += 2;
 		}
 		else if ('h' == *in && *(in+1) >= '1' && *(in+1) <= '6' && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			*out++ = *in++;
 			*out++ = *in;
 		}
 		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			in += 1;
 			memcpy(out, "li", 2);
 			out += 2;
 		}
 		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
-			_fa_handle_tag(&in, &out, &out_first_space, &out_last_space, &is_at_start_of_run, &state, a_config, &out_last_char, &letter_found);
+			_FA_HANDLE_BLOCK_TAG
 			*out++ = *in;
 		}
 		// start/end tags for excluded elements
