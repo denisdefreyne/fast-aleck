@@ -216,6 +216,7 @@ static inline size_t _fa_finish(char *a_out, enum _fa_state a_state)
 	out_last_space  = NULL; \
 	out_first_real_space = NULL; \
 	out_last_real_space = NULL; \
+	out_last_char_before_space = NULL; \
 	out_last_char_after_space = NULL; \
 	out_last_char = NULL;
 
