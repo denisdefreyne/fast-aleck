@@ -76,6 +76,12 @@ void fast_aleck_config_init(fast_aleck_config *config);
 //
 // return:
 //   the enhanced string, allocated on the heap
-char *fast_aleck(fast_aleck_config config, char *in, size_t in_size, size_t *ao_len);
+char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_out_size);
+
+// TODO document
+char *fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, size_t *ao_out_size);
+
+// TODO document
+char *fast_aleck_finish(fast_aleck_state *state, size_t *ao_out_size);
 
 #endif
