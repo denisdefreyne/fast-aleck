@@ -96,43 +96,43 @@ static inline size_t _fa_finish(char *a_out, enum _fa_fsm_state a_state)
 	return out - a_out - 1;
 }
 
-#define _FA_HANDLE_BLOCK_TAG \
-	if (state.config.widont && state.out_last_char_before_space && state.letter_found && state.out_last_real_space) \
-	{ \
-		memmove(state.out_first_real_space + 6, state.out_last_real_space + 1, out - state.out_last_real_space); \
-		memcpy(state.out_first_real_space, "&nbsp;", 6); \
-		out += 5 - (state.out_last_real_space - state.out_first_real_space); \
-	} \
-	state.fsm_state = _fa_fsm_state_tag; \
-	state.is_at_start_of_run = 1; \
-	state.letter_found = 0; \
-	state.out_first_space = NULL; \
-	state.out_last_space  = NULL; \
-	state.out_first_real_space = NULL; \
-	state.out_last_real_space = NULL; \
-	state.out_last_char_before_space = NULL; \
-	state.out_last_char_after_space = NULL; \
-	state.out_last_char = NULL;
-
-#define _FA_WRAP_CAPS \
-	if (!state.in_title && state.config.wrap_caps && state.caps_found && state.out_last_caps && state.out_last_caps - state.out_first_caps > 0) \
-		_fa_wrap_caps(&state.out_first_caps, &state.out_last_caps, &out); \
-	state.out_first_caps = NULL; \
-	state.out_last_caps = NULL;
-
-static inline void _fa_wrap_caps(char **out_first_caps, char **out_last_caps, char **out)
+static inline void _fa_handle_block_tag(fast_aleck_state *state, char **out)
 {
-	char *s1 = "<span class=\"caps\">";
-	char *s2 = "</span>";
+	if (state->config.widont && state->out_last_char_before_space && state->letter_found && state->out_last_real_space)
+	{
+		memmove(state->out_first_real_space + 6, state->out_last_real_space + 1, *out - state->out_last_real_space);
+		memcpy(state->out_first_real_space, "&nbsp;", 6);
+		*out += 5 - (state->out_last_real_space - state->out_first_real_space);
+	}
 
-	memmove(*out_first_caps + strlen(s1), *out_first_caps, *out_last_caps + 1 - *out_first_caps);
-	memcpy(*out_first_caps, s1, strlen(s1));
-	*out += strlen(s1);
-	memcpy(*out, s2, strlen(s2));
-	*out += strlen(s2);
+	state->fsm_state = _fa_fsm_state_tag;
+	state->is_at_start_of_run = 1;
+	state->letter_found = 0;
+	state->out_first_space = NULL;
+	state->out_last_space  = NULL;
+	state->out_first_real_space = NULL;
+	state->out_last_real_space = NULL;
+	state->out_last_char_before_space = NULL;
+	state->out_last_char_after_space = NULL;
+	state->out_last_char = NULL;
+}
 
-	*out_first_caps = NULL;
-	*out_last_caps  = NULL;
+static inline void _fa_wrap_caps(fast_aleck_state *state, char **out)
+{
+	if (!state->in_title && state->config.wrap_caps && state->caps_found && state->out_last_caps && state->out_last_caps - state->out_first_caps > 0)
+	{
+		char *s1 = "<span class=\"caps\">";
+		char *s2 = "</span>";
+
+		memmove(state->out_first_caps + strlen(s1), state->out_first_caps, state->out_last_caps + 1 - state->out_first_caps);
+		memcpy(state->out_first_caps, s1, strlen(s1));
+		*out += strlen(s1);
+		memcpy(*out, s2, strlen(s2));
+		*out += strlen(s2);
+	}
+
+	state->out_first_caps = NULL;
+	state->out_last_caps = NULL;
 }
 
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_len)
@@ -196,7 +196,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 				case 'k': case 'l': case 'm': case 'n': case 'o':
 				case 'p': case 'q': case 'r': case 's': case 't':
 				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z': 
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.out_last_char = out;
 					state.letter_found = 1;
 					state.chars_found_after_space = 1;
@@ -238,7 +238,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					break;
 
 				case '\t': case ' ': case '\r': case '\n':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.out_last_char = out;
 					if (state.chars_found_after_space)
 						state.out_first_space = NULL;
@@ -253,19 +253,19 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					break;
 
 				case '.':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					state.fsm_state = _fa_fsm_state_dot;
 					break;
 
 				case '-':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					state.fsm_state = _fa_fsm_state_dash;
 					break;
 
 				case '\'':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					if (!state.out_last_char || _fa_should_open_quote(*state.out_last_char))
 						out += _fa_write_single_quote_start(out, state.is_at_start_of_run && !state.in_title && state.config.wrap_quotes);
@@ -274,7 +274,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					break;
 				
 				case '"':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					if (!state.out_last_char || _fa_should_open_quote(*state.out_last_char))
 						out += _fa_write_double_quote_start(out, state.is_at_start_of_run && !state.in_title && state.config.wrap_quotes);
@@ -283,14 +283,14 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					break;
 						
 				case '<':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					*out++ = *in;
 					state.fsm_state = _fa_fsm_state_tag_start;
 					break;
 
 				case '&':
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					if (state.config.wrap_amps && !state.in_title && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
 					{
@@ -303,7 +303,7 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 					break;
 
 				default:
-					_FA_WRAP_CAPS;
+					_fa_wrap_caps(&state, &out);
 					state.chars_found_after_space = 1;
 					state.out_last_char = out;
 					*out++ = *in;
@@ -399,55 +399,55 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 		// start/end tags for resetting elements
 		else if (0 == strncmp(in, "blockquote", 10) && (isspace(*(in+10)) || *(in+10) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 9;
 			memcpy(out, "blockquote", 10);
 			out += 10;
 		}
 		else if (0 == strncmp(in, "br", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 1;
 			memcpy(out, "br", 2);
 			out += 2;
 		}
 		else if (0 == strncmp(in, "dd", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 1;
 			memcpy(out, "dd", 2);
 			out += 2;
 		}
 		else if (0 == strncmp(in, "div", 3) && (isspace(*(in+3)) || *(in+3) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 2;
 			memcpy(out, "div", 3);
 			out += 3;
 		}
 		else if (0 == strncmp(in, "dt", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 1;
 			memcpy(out, "dt", 2);
 			out += 2;
 		}
 		else if ('h' == *in && *(in+1) >= '1' && *(in+1) <= '6' && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			*out++ = *in++;
 			*out++ = *in;
 		}
 		else if (0 == strncmp(in, "li", 2) && (isspace(*(in+2)) || *(in+2) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			in += 1;
 			memcpy(out, "li", 2);
 			out += 2;
 		}
 		else if ('p' == *in && (isspace(*(in+1)) || *(in+1) == '>'))
 		{
-			_FA_HANDLE_BLOCK_TAG
+			_fa_handle_block_tag(&state, &out);
 			*out++ = *in;
 		}
 		// start/end tags for excluded elements
