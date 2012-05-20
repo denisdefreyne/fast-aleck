@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <fast-aleck/buffer.h>
+
 // The configuration
 typedef struct _fast_aleck_config {
 	bool wrap_amps;
@@ -32,9 +34,7 @@ typedef struct _fast_aleck_state {
 	fast_aleck_config config;
 
 	enum _fa_fsm_state fsm_state;
-
 	bool off;
-
 	bool in_code;
 	bool in_kbd;
 	bool in_pre;
@@ -44,22 +44,21 @@ typedef struct _fast_aleck_state {
 	bool in_math;
 	bool in_textarea;
 	bool in_title;
-
 	bool end_tag_slash_detected;
 	bool is_at_start_of_run;
 	bool caps_found;
 	bool letter_found;
 	bool chars_found_after_space;
 
-	char *out_first_space;
-	char *out_first_real_space;
-	char *out_last_space;
-	char *out_last_real_space;
-	char *out_first_caps;
-	char *out_last_caps;
-	char *out_last_char;
-	char *out_last_char_before_space;
-	char *out_last_char_after_space;
+	ptrdiff_t out_diff_first_space;
+	ptrdiff_t out_diff_first_real_space;
+	ptrdiff_t out_diff_last_space;
+	ptrdiff_t out_diff_last_real_space;
+	ptrdiff_t out_diff_first_caps;
+	ptrdiff_t out_diff_last_caps;
+	ptrdiff_t out_diff_last_char;
+	ptrdiff_t out_diff_last_char_before_space;
+	ptrdiff_t out_diff_last_char_after_space;
 } fast_aleck_state;
 
 // Initialize the given configuration to the default parameters (all options
@@ -82,9 +81,11 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 void fast_aleck_init(fast_aleck_state *a_state, fast_aleck_config a_config);
 
 // TODO document
-char *fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, size_t *ao_out_size);
+// TODO allow buf to be nil
+void fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, fast_aleck_buffer *out_buf);
 
 // TODO document
-char *fast_aleck_finish(fast_aleck_state *state, size_t *ao_out_size);
+// TODO allow buf to be nil
+void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *buf);
 
 #endif
