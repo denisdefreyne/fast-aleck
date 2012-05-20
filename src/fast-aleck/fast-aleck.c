@@ -544,57 +544,33 @@ static inline void _fa_append_mdash(fast_aleck_buffer *buf)
 static inline void _fa_append_single_quote_start(fast_aleck_buffer *buf, bool a_should_wrap)
 {
 	if (a_should_wrap)
-	{
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">", 18);
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x98", 3);
-		fast_aleck_buffer_unchecked_append_string(buf, "</span>", 7);
-	}
+		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">\xE2\x80\x98</span>", 28);
 	else
-	{
 		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x98", 3);
-	}
 }
 
 static inline void _fa_append_single_quote_end(fast_aleck_buffer *buf, bool a_should_wrap)
 {
 	if (a_should_wrap)
-	{
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">", 18);
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x99", 3);
-		fast_aleck_buffer_unchecked_append_string(buf, "</span>", 7);
-	}
+		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">\xE2\x80\x99", 28);
 	else
-	{
 		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x99", 3);
-	}
 }
 
 static inline void _fa_append_double_quote_start(fast_aleck_buffer *buf, bool a_should_wrap)
 {
 	if (a_should_wrap)
-	{
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">", 19);
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9C", 3);
-		fast_aleck_buffer_unchecked_append_string(buf, "</span>", 7);
-	}
+		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">\xE2\x80\x9C</span>", 29);
 	else
-	{
 		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9C", 3);
-	}
 }
 
 static inline void _fa_append_double_quote_end(fast_aleck_buffer *buf, bool a_should_wrap)
 {
 	if (a_should_wrap)
-	{
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">", 19);
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9D", 3);
-		fast_aleck_buffer_unchecked_append_string(buf, "</span>", 7);
-	}
+		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">\xE2\x80\x9D</span>", 29);
 	else
-	{
 		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9D", 3);
-	}
 }
 
 static inline void _fa_append_wrapped_amp(fast_aleck_buffer *buf)
