@@ -34,6 +34,10 @@ void fast_aleck_init(fast_aleck_state *state, fast_aleck_config config)
 
 //////////////////////////////////////////////////////////////////////////////
 
+static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+
 static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
 static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
 static void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
@@ -75,40 +79,61 @@ void fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, fa
 		_fa_feed_handle_tag_char(a_state, *a_in, out_buf);
 }
 
-void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *buf)
+void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *out_buf)
 {
-	switch (state->fsm_state)
+	_fa_finish_tag_state(state, out_buf);
+	_fa_finish_text_state(state, out_buf);
+
+	fast_aleck_buffer_unchecked_append_char(out_buf, '\0');
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+static void _fa_flush_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	// TODO implement
+}
+
+static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	_fa_flush_tag_state(a_state, out_buf);
+
+	// TODO implement
+}
+
+static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	switch (a_state->fsm_state)
 	{
 		case _fa_fsm_text_state_dot:
-			fast_aleck_buffer_unchecked_append_char(buf, '.');
+			fast_aleck_buffer_unchecked_append_char(out_buf, '.');
 			break;
 
 		case _fa_fsm_text_state_dotdot:
-			fast_aleck_buffer_unchecked_append_string(buf, "..", 2);
+			fast_aleck_buffer_unchecked_append_string(out_buf, "..", 2);
 			break;
 
 		case _fa_fsm_text_state_dash:
-			fast_aleck_buffer_unchecked_append_char(buf, '-');
+			fast_aleck_buffer_unchecked_append_char(out_buf, '-');
 			break;
 
 		case _fa_fsm_text_state_dashdash:
-			_fa_append_mdash(buf);
+			_fa_append_mdash(out_buf);
 			break;
 
 		default:
 			break;
 	}
-
-	fast_aleck_buffer_unchecked_append_char(buf, '\0');
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
-static void fast_aleck_reset_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
 {
-	// TODO implement
+	_fa_flush_text_state(a_state, out_buf);
+
+	// TODO reinitialize fully
 	a_state->is_at_start_of_run = true;
 	a_state->last_char = '\0';
+	a_state->fsm_state = 0;
 }
 
 #define _FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(flag) \
@@ -239,7 +264,7 @@ static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *ou
 	}
 
 	if (is_block)
-		fast_aleck_reset_text_state(a_state, out_buf);
+		_fa_finish_text_state(a_state, out_buf);
 }
 
 static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
@@ -253,6 +278,7 @@ redo:
 			if ('<' == a_in)
 			{
 				a_state->fsm_tag_state = _fa_fsm_tag_state_tag_start;
+				_fa_flush_text_state(a_state, out_buf);
 				fast_aleck_buffer_append_char(out_buf, a_in);
 			}
 			else if (a_state->is_in_excluded_element)
