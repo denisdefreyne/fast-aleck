@@ -39,21 +39,3 @@ void fast_aleck_buffer_ensure_remaining(fast_aleck_buffer *b, size_t remaining)
 	b->size = new_size;
 	b->cur = b->cur + (b->start - start_orig);
 }
-
-void fast_aleck_buffer_clear(fast_aleck_buffer *b)
-{
-	b->cur = b->start;
-}
-
-void fast_aleck_buffer_append_char(fast_aleck_buffer *b, char c)
-{
-	fast_aleck_buffer_ensure_remaining(b, 1);
-	*b->cur++ = c;
-}
-
-void fast_aleck_buffer_append_string(fast_aleck_buffer *b, char *s, size_t length)
-{
-	fast_aleck_buffer_ensure_remaining(b, length);
-	memcpy(b->cur, s, length);
-	b->cur += length;
-}
