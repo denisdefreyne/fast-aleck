@@ -98,7 +98,19 @@ static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *o
 {
 	_fa_flush_tag_state(a_state, out_buf);
 
-	// TODO implement
+	a_state->fsm_tag_state = 0;
+	a_state->is_closing_tag = false;
+	fast_aleck_buffer_clear(&a_state->tag_name);
+	a_state->is_in_excluded_element = false;
+	a_state->is_in_code      = false;
+	a_state->is_in_kbd       = false;
+	a_state->is_in_pre       = false;
+	a_state->is_in_script    = false;
+	a_state->is_in_samp      = false;
+	a_state->is_in_var       = false;
+	a_state->is_in_math      = false;
+	a_state->is_in_textarea  = false;
+	a_state->is_in_title     = false;
 }
 
 static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
@@ -130,7 +142,6 @@ static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *
 {
 	_fa_flush_text_state(a_state, out_buf);
 
-	// TODO reinitialize fully
 	a_state->is_at_start_of_run = true;
 	a_state->last_char = '\0';
 	a_state->fsm_state = 0;
@@ -369,6 +380,8 @@ redo:
 			break;
 	}
 }
+
+// FIXME everything below here is a bit icky
 
 void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
 {
