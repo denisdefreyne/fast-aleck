@@ -7,19 +7,25 @@ include_directories(include)
 add_definitions(-std=gnu99 -Wall -Wextra -Wno-missing-braces -Wno-unused-function -Wno-unused-parameter)
 
 set(
-	SOURCES_EXECUTABLE
+	SOURCES_SHARED
 	./src/fast-aleck/fast-aleck.c
+	./src/fast-aleck/buffer.c
+)
+
+set(
+	SOURCES_EXECUTABLE
+	${SOURCES_SHARED}
 	./src/fast-aleck/fast-aleck-main.c
 )
 
 set(
 	SOURCES_LIBRARY
-	./src/fast-aleck/fast-aleck.c
+	${SOURCES_SHARED}
 )
 
 set(
 	SOURCES_TEST
-	./src/fast-aleck/fast-aleck.c
+	${SOURCES_SHARED}
 	./src/fast-aleck/fast-aleck-test.c
 )
 
