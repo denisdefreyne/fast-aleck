@@ -83,8 +83,16 @@ int main(void)
 		"(“Amazing!” she thought.) (‘Amazing!’ she thought.)");
 
 	fast_aleck_test(&test_case,
+		"Before... yes. <![CDATA[Not here! & ] ... ] &amp > --]]> After... yes",
+		"Before… yes. <![CDATA[Not here! & ] ... ] &amp > --]]> After… yes");
+
+	fast_aleck_test(&test_case,
 		"Before... yes. <img alt=\"During... no.\"> After... yes.",
 		"Before… yes. <img alt=\"During... no.\"> After… yes.");
+
+	fast_aleck_test(&test_case,
+		"Foo... <img alt=\"Bar... > Baz...\"> Quux...",
+		"Foo… <img alt=\"Bar... > Baz...\"> Quux…");
 
 	fast_aleck_test(&test_case,
 		"Before... yes. <script>In script... no.</script> After... yes.",
@@ -409,6 +417,8 @@ static void _fa_puts_escaped(char *a_s)
 	{
 		if ('\n' == *s)
 			fputs("\\n", stdout);
+		else if ('\v' == *s)
+			fputs("\\v", stdout);
 		else
 			fputc(*s, stdout);
 	}

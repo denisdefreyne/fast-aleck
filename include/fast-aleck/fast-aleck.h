@@ -14,38 +14,52 @@ typedef struct _fast_aleck_config {
 	bool widont;
 } fast_aleck_config;
 
-// The FSM state (private)
-enum _fa_fsm_state
+// The FSM tag state (private)
+enum _fa_fsm_tag_state {
+	_fa_fsm_tag_state_entry,
+	_fa_fsm_tag_state_tag_start,
+	_fa_fsm_tag_state_tag_name,
+	_fa_fsm_tag_state_attr,
+	_fa_fsm_tag_state_attr_squo,
+	_fa_fsm_tag_state_attr_dquo
+};
+
+// The FSM text state (private)
+enum _fa_fsm_text_state
 {
-	_fa_fsm_state_start,
-	_fa_fsm_state_dot,
-	_fa_fsm_state_dotdot,
-	_fa_fsm_state_dash,
-	_fa_fsm_state_dashdash,
-	_fa_fsm_state_tag_start,
-	_fa_fsm_state_tag,
-	_fa_fsm_state_cdata,
-	_fa_fsm_state_attr_squo,
-	_fa_fsm_state_attr_dquo
+	_fa_fsm_text_state_start,
+	_fa_fsm_text_state_dot,
+	_fa_fsm_text_state_dotdot,
+	_fa_fsm_text_state_dash,
+	_fa_fsm_text_state_dashdash
 };
 
 // The state (private)
 typedef struct _fast_aleck_state {
 	fast_aleck_config config;
 
-	enum _fa_fsm_state fsm_state;
-	bool off;
-	bool in_code;
-	bool in_kbd;
-	bool in_pre;
-	bool in_script;
-	bool in_samp;
-	bool in_var;
-	bool in_math;
-	bool in_textarea;
-	bool in_title;
-	bool end_tag_slash_detected;
+	// tag state
+	enum _fa_fsm_tag_state fsm_tag_state;
+	bool is_closing_tag;
+	fast_aleck_buffer tag_name;
+	bool is_in_excluded_element;
+	bool is_in_code;
+	bool is_in_kbd;
+	bool is_in_pre;
+	bool is_in_script;
+	bool is_in_samp;
+	bool is_in_var;
+	bool is_in_math;
+	bool is_in_textarea;
+	bool is_in_title;
+
+	// text state
+	enum _fa_fsm_text_state fsm_state;
 	bool is_at_start_of_run;
+	char last_char;
+
+	// old
+	bool off;
 	bool caps_found;
 	bool letter_found;
 	bool chars_found_after_space;
@@ -81,11 +95,9 @@ char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_
 void fast_aleck_init(fast_aleck_state *a_state, fast_aleck_config a_config);
 
 // TODO document
-// TODO allow buf to be nil
 void fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, fast_aleck_buffer *out_buf);
 
 // TODO document
-// TODO allow buf to be nil
 void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *buf);
 
 #endif
