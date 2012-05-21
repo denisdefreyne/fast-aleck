@@ -117,6 +117,22 @@ static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *o
 {
 	switch (a_state->fsm_state)
 	{
+		case _fa_fsm_text_state_amp:
+			fast_aleck_buffer_unchecked_append_char(out_buf, '&');
+			break;
+
+		case _fa_fsm_text_state_ampa:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&a", 2);
+			break;
+
+		case _fa_fsm_text_state_ampam:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&am", 3);
+			break;
+
+		case _fa_fsm_text_state_ampamp:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&amp", 4);
+			break;
+
 		case _fa_fsm_text_state_dot:
 			fast_aleck_buffer_unchecked_append_char(out_buf, '.');
 			break;
@@ -136,6 +152,8 @@ static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *o
 		default:
 			break;
 	}
+
+	a_state->fsm_state = _fa_fsm_text_state_start;
 }
 
 static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
@@ -488,21 +506,7 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 					case '&':
 						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
-						/*
-						if (a_state->config.wrap_amps && !a_state->is_in_title && (in + 4 < in_start + a_in_size - 1) && 0 == strncmp(in+1, "amp;", 4))
-						{
-							in += 4;
-							_fa_append_wrapped_amp(out_buf);
-							break;
-						}
-						*/
-						// FIXME this is wrong (&amp; vs &)
-						if (a_state->config.wrap_amps && !a_state->is_in_title)
-						{
-							_fa_append_wrapped_amp(out_buf);
-						}
-						else
-							fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						a_state->fsm_state = _fa_fsm_text_state_amp;
 						break;
 		
 					default:
@@ -518,6 +522,56 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 				fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
 			}
 			a_state->is_at_start_of_run = 0;
+			break;
+
+		case _fa_fsm_text_state_amp:
+			if (a_in == 'a')
+				a_state->fsm_state = _fa_fsm_text_state_ampa;
+			else
+			{
+				fast_aleck_buffer_unchecked_append_char(out_buf, '&');
+				a_state->fsm_state = _fa_fsm_text_state_start;
+				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
+			}
+			break;
+
+		case _fa_fsm_text_state_ampa:
+			if (a_in == 'm')
+				a_state->fsm_state = _fa_fsm_text_state_ampam;
+			else
+			{
+				fast_aleck_buffer_unchecked_append_string(out_buf, "&a", 2);
+				a_state->fsm_state = _fa_fsm_text_state_start;
+				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
+			}
+			break;
+
+		case _fa_fsm_text_state_ampam:
+			if (a_in == 'p')
+				a_state->fsm_state = _fa_fsm_text_state_ampamp;
+			else
+			{
+				fast_aleck_buffer_unchecked_append_string(out_buf, "&am", 3);
+				a_state->fsm_state = _fa_fsm_text_state_start;
+				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
+			}
+			break;
+
+		case _fa_fsm_text_state_ampamp:
+			if (a_in == ';')
+			{
+				if (a_state->config.wrap_amps && !a_state->is_in_title)
+					_fa_append_wrapped_amp(out_buf);
+				else
+					fast_aleck_buffer_unchecked_append_string(out_buf, "&amp;", 5);
+				a_state->fsm_state = _fa_fsm_text_state_start;
+			}
+			else
+			{
+				fast_aleck_buffer_unchecked_append_string(out_buf, "&amp", 4);
+				a_state->fsm_state = _fa_fsm_text_state_start;
+				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
+			}
 			break;
 
 		case _fa_fsm_text_state_dot:

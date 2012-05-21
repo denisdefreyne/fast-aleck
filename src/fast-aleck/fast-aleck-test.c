@@ -47,6 +47,10 @@ int main(void)
 		"This sentence ends in two periods..");
 
 	fast_aleck_test(&test_case,
+		"This sentence ends in two periods..</span>",
+		"This sentence ends in two periods..</span>");
+
+	fast_aleck_test(&test_case,
 		"This sentence ends in three periods...",
 		"This sentence ends in three periods…");
 
@@ -217,6 +221,26 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"Ampersands &amp; More",
 		"Ampersands <span class=\"amp\">&amp;</span> More");
+
+	fast_aleck_test(&test_case,
+		"Ampersands &</span>",
+		"Ampersands &</span>");
+
+	fast_aleck_test(&test_case,
+		"Ampersands &a</span>",
+		"Ampersands &a</span>");
+
+	fast_aleck_test(&test_case,
+		"Ampersands &am</span>",
+		"Ampersands &am</span>");
+
+	fast_aleck_test(&test_case,
+		"Ampersands &amp</span>",
+		"Ampersands &amp</span>");
+
+	fast_aleck_test(&test_case,
+		"Ampersands &amp;</span>",
+		"Ampersands <span class=\"amp\">&amp;</span></span>");
 
 	fast_aleck_test(&test_case,
 		"A &amp; B <title>C &amp; D</title> E &amp; F",

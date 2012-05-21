@@ -31,7 +31,12 @@ enum _fa_fsm_text_state
 	_fa_fsm_text_state_dot,
 	_fa_fsm_text_state_dotdot,
 	_fa_fsm_text_state_dash,
-	_fa_fsm_text_state_dashdash
+	_fa_fsm_text_state_dashdash,
+	_fa_fsm_text_state_amp,
+	_fa_fsm_text_state_ampa,
+	_fa_fsm_text_state_ampam,
+	_fa_fsm_text_state_ampamp
+
 };
 
 // The state (private)
