@@ -91,7 +91,27 @@ void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *out_buf)
 
 static void _fa_flush_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
 {
-	// TODO implement
+	switch (a_state->fsm_tag_state)
+	{
+		case _fa_fsm_tag_state_tag_start:
+		case _fa_fsm_tag_state_tag_name:
+		case _fa_fsm_tag_state_attr:
+			fast_aleck_buffer_unchecked_append_char(out_buf, '>');
+			break;
+
+		case _fa_fsm_tag_state_attr_dquo:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "\">", 2);
+			break;
+			
+		case _fa_fsm_tag_state_attr_squo:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "'>", 2);
+			break;
+			
+		default:
+			break;
+	}
+
+	a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
 }
 
 static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)

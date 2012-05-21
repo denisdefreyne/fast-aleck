@@ -210,6 +210,18 @@ int main(void)
 		"\"blah <div>blah</div>\"",
 		"“blah <div>blah</div>“");
 
+	fast_aleck_test(&test_case,
+		"foo </div",
+		"foo </div>");
+
+	fast_aleck_test(&test_case,
+		"foo <div class='meh",
+		"foo <div class='meh'>");
+
+	fast_aleck_test(&test_case,
+		"foo <div class=\"meh",
+		"foo <div class=\"meh\">");
+
 	// WRAP AMPS TESTS
 
 	test_case.wrap_amps = 1;
