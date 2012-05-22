@@ -28,8 +28,6 @@ void fast_aleck_init(fast_aleck_state *state, fast_aleck_config config)
 	state->out_diff_first_real_space = -1;
 	state->out_diff_last_space = -1;
 	state->out_diff_last_real_space = -1;
-	state->out_diff_first_caps = -1;
-	state->out_diff_last_caps = -1;
 	state->out_diff_last_char = -1;
 	state->out_diff_last_char_before_space = -1;
 	state->out_diff_last_char_after_space = -1;
@@ -449,110 +447,94 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 	switch (a_state->fsm_state)
 	{
 		case _fa_fsm_text_state_start:
-			if (!a_state->off)
+			switch(a_in)
 			{
-				switch(a_in)
-				{
-					case 'a': case 'b': case 'c': case 'd': case 'e':
-					case 'f': case 'g': case 'h': case 'i': case 'j':
-					case 'k': case 'l': case 'm': case 'n': case 'o':
-					case 'p': case 'q': case 'r': case 's': case 't':
-					case 'u': case 'v': case 'w': case 'x': case 'y': case 'z': 
-						a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
-						a_state->letter_found                   = 1;
-						a_state->chars_found_after_space        = 1;
-						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
-						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
-						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
-						break;
+				case 'a': case 'b': case 'c': case 'd': case 'e':
+				case 'f': case 'g': case 'h': case 'i': case 'j':
+				case 'k': case 'l': case 'm': case 'n': case 'o':
+				case 'p': case 'q': case 'r': case 's': case 't':
+				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z': 
+					a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
+					a_state->chars_found_after_space        = 1;
+					a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
+					a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
+					a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
+					_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+					break;
 
-					case 'A': case 'B': case 'C': case 'D': case 'E': 
-					case 'F': case 'G': case 'H': case 'I': case 'J': 
-					case 'K': case 'L': case 'M': case 'N': case 'O': 
-					case 'P': case 'Q': case 'R': case 'S': case 'T': 
-					case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z': 
-						if (a_state->out_diff_first_caps < 0)
-							a_state->out_diff_first_caps = out_buf->cur - out_buf->start;
-						a_state->out_diff_last_caps             = out_buf->cur - out_buf->start;
-						a_state->letter_found                   = 1;
-						a_state->chars_found_after_space        = 1;
-						a_state->caps_found                     = 1;
-						a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
-						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
-						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
-						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
-						break;
+				case 'A': case 'B': case 'C': case 'D': case 'E': 
+				case 'F': case 'G': case 'H': case 'I': case 'J': 
+				case 'K': case 'L': case 'M': case 'N': case 'O': 
+				case 'P': case 'Q': case 'R': case 'S': case 'T': 
+				case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z': 
+					a_state->chars_found_after_space        = 1;
+					a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
+					a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
+					a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
+					a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
+					_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+					break;
 
-					case '1': case '2': case '3': case '4': case '5': 
-					case '6': case '7': case '8': case '9': case '0': 
-						if (a_state->out_diff_first_caps >= 0)
-							a_state->out_diff_last_caps = out_buf->cur - out_buf->start;
-						a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
-						a_state->letter_found                   = 1;
-						a_state->chars_found_after_space        = 1;
-						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
-						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
-						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
-						break;
-		
-					case '\t': case ' ': case '\r': case '\n':
-						a_state->out_diff_last_char = out_buf->cur - out_buf->start;
-						if (a_state->chars_found_after_space)
-							a_state->out_diff_first_space = -1;
-						if (a_state->out_diff_first_space < 0)
-							a_state->out_diff_first_space = out_buf->cur - out_buf->start;
-						a_state->out_diff_last_space = out_buf->cur - out_buf->start;
-						a_state->chars_found_after_space = 0;
-						if (a_state->out_diff_last_char_after_space >= 0)
-							a_state->out_diff_last_char_before_space = a_state->out_diff_last_char_after_space;
-						a_state->out_diff_last_char_after_space = -1;
-						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
-						break;
-		
-					case '.':
-						a_state->chars_found_after_space = 1;
-						a_state->fsm_state = _fa_fsm_text_state_dot;
-						break;
-		
-					case '-':
-						a_state->chars_found_after_space = 1;
-						a_state->fsm_state = _fa_fsm_text_state_dash;
-						break;
-		
-					case '\'':
-						a_state->chars_found_after_space = 1;
-						if (_fa_should_open_quote(a_state->last_char))
-							_fa_append_single_quote_start(out_buf, a_state);
-						else
-							_fa_append_single_quote_end(out_buf, a_state);
-						break;
-					
-					case '"':
-						a_state->chars_found_after_space = 1;
-						if (_fa_should_open_quote(a_state->last_char))
-							_fa_append_double_quote_start(out_buf, a_state);
-						else
-							_fa_append_double_quote_end(out_buf, a_state);
-						break;
-							
-					case '&':
-						a_state->chars_found_after_space = 1;
-						a_state->fsm_state = _fa_fsm_text_state_amp;
-						break;
-		
-					default:
-						a_state->chars_found_after_space = 1;
-						a_state->out_diff_last_char = out_buf->cur - out_buf->start;
-						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
-						break;
-				}
-			}
-			else
-			{
-				_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+				case '1': case '2': case '3': case '4': case '5': 
+				case '6': case '7': case '8': case '9': case '0': 
+					a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
+					a_state->chars_found_after_space        = 1;
+					a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
+					a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
+					a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
+					_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+					break;
+	
+				case '\t': case ' ': case '\r': case '\n':
+					a_state->out_diff_last_char = out_buf->cur - out_buf->start;
+					if (a_state->chars_found_after_space)
+						a_state->out_diff_first_space = -1;
+					if (a_state->out_diff_first_space < 0)
+						a_state->out_diff_first_space = out_buf->cur - out_buf->start;
+					a_state->out_diff_last_space = out_buf->cur - out_buf->start;
+					a_state->chars_found_after_space = 0;
+					if (a_state->out_diff_last_char_after_space >= 0)
+						a_state->out_diff_last_char_before_space = a_state->out_diff_last_char_after_space;
+					a_state->out_diff_last_char_after_space = -1;
+					_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+					break;
+	
+				case '.':
+					a_state->chars_found_after_space = 1;
+					a_state->fsm_state = _fa_fsm_text_state_dot;
+					break;
+	
+				case '-':
+					a_state->chars_found_after_space = 1;
+					a_state->fsm_state = _fa_fsm_text_state_dash;
+					break;
+	
+				case '\'':
+					a_state->chars_found_after_space = 1;
+					if (_fa_should_open_quote(a_state->last_char))
+						_fa_append_single_quote_start(out_buf, a_state);
+					else
+						_fa_append_single_quote_end(out_buf, a_state);
+					break;
+				
+				case '"':
+					a_state->chars_found_after_space = 1;
+					if (_fa_should_open_quote(a_state->last_char))
+						_fa_append_double_quote_start(out_buf, a_state);
+					else
+						_fa_append_double_quote_end(out_buf, a_state);
+					break;
+						
+				case '&':
+					a_state->chars_found_after_space = 1;
+					a_state->fsm_state = _fa_fsm_text_state_amp;
+					break;
+	
+				default:
+					a_state->chars_found_after_space = 1;
+					a_state->out_diff_last_char = out_buf->cur - out_buf->start;
+					_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
+					break;
 			}
 			a_state->is_at_start_of_run = 0;
 			break;
@@ -658,7 +640,7 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 			break;
 	}
 
-	a_state->last_char = a_in;//*(out_buf->cur-1);
+	a_state->last_char = a_in;
 }
 
 static inline bool _fa_should_open_quote(char in)
@@ -725,36 +707,6 @@ void _fa_feed_handle_body_text_caps_char(fast_aleck_state *a_state, char a_in, f
 		_fa_flush_caps_state(a_state, out_buf);
 		fast_aleck_buffer_append_char(out_buf, a_in);
 	}
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-static inline void _fa_handle_block_tag(fast_aleck_state *state, fast_aleck_buffer *buf)
-{
-	if (state->config.widont && state->out_diff_last_char_before_space >= 0 && state->letter_found && state->out_diff_last_real_space >= 0)
-	{
-		memmove(
-			buf->start + state->out_diff_first_real_space + 6,
-			buf->start + state->out_diff_last_real_space + 1,
-			buf->cur - (buf->start + state->out_diff_last_real_space));
-		memcpy(
-			buf->start + state->out_diff_first_real_space,
-			"&nbsp;",
-			6);
-		buf->cur += 5 - (state->out_diff_last_real_space - state->out_diff_first_real_space);
-	}
-
-	// FIXME reenable
-	//state->fsm_state = _fa_fsm_text_state_tag;
-	state->is_at_start_of_run = 1;
-	state->letter_found = 0;
-	state->out_diff_first_space            = -1;
-	state->out_diff_last_space             = -1;
-	state->out_diff_first_real_space       = -1;
-	state->out_diff_last_real_space        = -1;
-	state->out_diff_last_char_before_space = -1;
-	state->out_diff_last_char_after_space  = -1;
-	state->out_diff_last_char              = -1;
 }
 
 //////////////////////////////////////////////////////////////////////////////

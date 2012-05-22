@@ -68,17 +68,12 @@ typedef struct _fast_aleck_state {
 	bool char_found;
 
 	// old
-	bool off;
-	bool caps_found;
-	bool letter_found;
 	bool chars_found_after_space;
 
 	ptrdiff_t out_diff_first_space;
 	ptrdiff_t out_diff_first_real_space;
 	ptrdiff_t out_diff_last_space;
 	ptrdiff_t out_diff_last_real_space;
-	ptrdiff_t out_diff_first_caps;
-	ptrdiff_t out_diff_last_caps;
 	ptrdiff_t out_diff_last_char;
 	ptrdiff_t out_diff_last_char_before_space;
 	ptrdiff_t out_diff_last_char_after_space;
