@@ -63,6 +63,10 @@ typedef struct _fast_aleck_state {
 	bool is_at_start_of_run;
 	char last_char;
 
+	// caps state
+	fast_aleck_buffer caps_buf;
+	bool char_found;
+
 	// old
 	bool off;
 	bool caps_found;

@@ -19,8 +19,11 @@ void fast_aleck_init(fast_aleck_state *state, fast_aleck_config config)
 	state->config = config;
 
 	fast_aleck_buffer_create(&state->tag_name, 10);
+	fast_aleck_buffer_create(&state->caps_buf, 50);
 
 	state->is_at_start_of_run = 1;
+
+	// OLD
 	state->out_diff_first_space = -1;
 	state->out_diff_first_real_space = -1;
 	state->out_diff_last_space = -1;
@@ -34,24 +37,37 @@ void fast_aleck_init(fast_aleck_state *state, fast_aleck_config config)
 
 //////////////////////////////////////////////////////////////////////////////
 
+// tag
+static void _fa_flush_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
 static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
+static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+
+// text
 static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
 static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
-
-static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
-static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
 static void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
-
-static inline void _fa_append_ellipsis(fast_aleck_buffer *buf);
-static inline void _fa_append_mdash(fast_aleck_buffer *buf);
-static inline void _fa_append_single_quote_start(fast_aleck_buffer *buf, bool a_should_wrap);
-static inline void _fa_append_single_quote_end(fast_aleck_buffer *buf, bool a_should_wrap);
-static inline void _fa_append_double_quote_start(fast_aleck_buffer *buf, bool a_should_wrap);
-static inline void _fa_append_double_quote_end(fast_aleck_buffer *buf, bool a_should_wrap);
-static inline void _fa_append_wrapped_amp(fast_aleck_buffer *buf);
-
 static inline bool _fa_should_open_quote(char in);
 
+// caps
+static void _fa_flush_caps_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+static void _fa_finish_caps_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf);
+static void _fa_feed_handle_body_text_caps_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf);
+static void _fa_feed_handle_body_text_caps_string(fast_aleck_state *a_state, char *a_in, fast_aleck_buffer *out_buf);
+
+// widon't
+// TODO add stuff here
+
+// helper
+static inline void _fa_append_ellipsis(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_mdash(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_single_quote_start(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_single_quote_end(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_double_quote_start(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_double_quote_end(fast_aleck_buffer *buf, fast_aleck_state *state);
+static inline void _fa_append_wrapped_amp(fast_aleck_buffer *buf, fast_aleck_state *state);
+
+// old
 static inline void _fa_handle_block_tag(fast_aleck_state *state, fast_aleck_buffer *buf);
 static inline void _fa_wrap_caps(fast_aleck_state *state, fast_aleck_buffer *buf);
 
@@ -82,7 +98,6 @@ void fast_aleck_feed(fast_aleck_state *a_state, char *a_in, size_t a_in_size, fa
 void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *out_buf)
 {
 	_fa_finish_tag_state(state, out_buf);
-	_fa_finish_text_state(state, out_buf);
 
 	fast_aleck_buffer_unchecked_append_char(out_buf, '\0');
 }
@@ -91,6 +106,8 @@ void fast_aleck_finish(fast_aleck_state *state, fast_aleck_buffer *out_buf)
 
 static void _fa_flush_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
 {
+	_fa_flush_text_state(a_state, out_buf);
+
 	switch (a_state->fsm_tag_state)
 	{
 		case _fa_fsm_tag_state_tag_start:
@@ -133,56 +150,107 @@ static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *o
 	a_state->is_in_title     = false;
 }
 
-static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
 {
-	switch (a_state->fsm_state)
+	bool is_tag_name_complete;
+
+redo:
+	switch (a_state->fsm_tag_state)
 	{
-		case _fa_fsm_text_state_amp:
-			fast_aleck_buffer_unchecked_append_char(out_buf, '&');
+		case _fa_fsm_tag_state_entry:
+			if ('<' == a_in)
+			{
+				a_state->fsm_tag_state = _fa_fsm_tag_state_tag_start;
+				_fa_flush_text_state(a_state, out_buf);
+				fast_aleck_buffer_append_char(out_buf, a_in);
+			}
+			else if (a_state->is_in_excluded_element)
+			{
+				fast_aleck_buffer_append_char(out_buf, a_in);
+			}
+			else
+			{
+				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
+			}
 			break;
 
-		case _fa_fsm_text_state_ampa:
-			fast_aleck_buffer_unchecked_append_string(out_buf, "&a", 2);
+		case _fa_fsm_tag_state_tag_start:
+			a_state->is_closing_tag = false;
+			fast_aleck_buffer_clear(&a_state->tag_name);
+			switch (a_in)
+			{
+				case '>':
+					fast_aleck_buffer_append_char(out_buf, a_in);
+					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+					break;
+
+				case '/':
+					fast_aleck_buffer_append_char(out_buf, a_in);
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+					a_state->is_closing_tag = true;
+					break;
+			
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+					goto redo;
+					break;
+			}
 			break;
 
-		case _fa_fsm_text_state_ampam:
-			fast_aleck_buffer_unchecked_append_string(out_buf, "&am", 3);
+		case _fa_fsm_tag_state_tag_name:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			is_tag_name_complete = false;
+			switch (a_in)
+			{
+				case ' ':
+				case '\t':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
+					is_tag_name_complete = true;
+					break;
+
+				case '>':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+					is_tag_name_complete = true;
+					break;
+
+				default:
+					fast_aleck_buffer_append_char(&a_state->tag_name, a_in);
+					break;
+			}
+			if (is_tag_name_complete)
+				_fa_handle_tag_name(a_state, out_buf);
 			break;
 
-		case _fa_fsm_text_state_ampamp:
-			fast_aleck_buffer_unchecked_append_string(out_buf, "&amp", 4);
+		case _fa_fsm_tag_state_attr:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '"':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_attr_dquo;
+					break;
+
+				case '\'':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_attr_squo;
+					break;
+
+				case '>':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+					break;
+			}
 			break;
 
-		case _fa_fsm_text_state_dot:
-			fast_aleck_buffer_unchecked_append_char(out_buf, '.');
+		case _fa_fsm_tag_state_attr_squo:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			if ('\'' == a_in)
+				a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
 			break;
 
-		case _fa_fsm_text_state_dotdot:
-			fast_aleck_buffer_unchecked_append_string(out_buf, "..", 2);
-			break;
-
-		case _fa_fsm_text_state_dash:
-			fast_aleck_buffer_unchecked_append_char(out_buf, '-');
-			break;
-
-		case _fa_fsm_text_state_dashdash:
-			_fa_append_mdash(out_buf);
-			break;
-
-		default:
+		case _fa_fsm_tag_state_attr_dquo:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			if ('"' == a_in)
+				a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
 			break;
 	}
-
-	a_state->fsm_state = _fa_fsm_text_state_start;
-}
-
-static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
-{
-	_fa_flush_text_state(a_state, out_buf);
-
-	a_state->is_at_start_of_run = true;
-	a_state->last_char = '\0';
-	a_state->fsm_state = 0;
 }
 
 #define _FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(flag) \
@@ -316,110 +384,63 @@ static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *ou
 		_fa_finish_text_state(a_state, out_buf);
 }
 
-static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
+//////////////////////////////////////////////////////////////////////////////
+
+static void _fa_flush_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
 {
-	bool is_tag_name_complete;
+	_fa_flush_caps_state(a_state, out_buf);
 
-redo:
-	switch (a_state->fsm_tag_state)
+	switch (a_state->fsm_state)
 	{
-		case _fa_fsm_tag_state_entry:
-			if ('<' == a_in)
-			{
-				a_state->fsm_tag_state = _fa_fsm_tag_state_tag_start;
-				_fa_flush_text_state(a_state, out_buf);
-				fast_aleck_buffer_append_char(out_buf, a_in);
-			}
-			else if (a_state->is_in_excluded_element)
-			{
-				fast_aleck_buffer_append_char(out_buf, a_in);
-			}
-			else
-			{
-				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
-			}
+		case _fa_fsm_text_state_amp:
+			fast_aleck_buffer_unchecked_append_char(out_buf, '&');
 			break;
 
-		case _fa_fsm_tag_state_tag_start:
-			a_state->is_closing_tag = false;
-			fast_aleck_buffer_clear(&a_state->tag_name);
-			switch (a_in)
-			{
-				case '>':
-					fast_aleck_buffer_append_char(out_buf, a_in);
-					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
-					break;
-
-				case '/':
-					fast_aleck_buffer_append_char(out_buf, a_in);
-					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
-					a_state->is_closing_tag = true;
-					break;
-			
-				default:
-					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
-					goto redo;
-					break;
-			}
+		case _fa_fsm_text_state_ampa:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&a", 2);
 			break;
 
-		case _fa_fsm_tag_state_tag_name:
-			fast_aleck_buffer_append_char(out_buf, a_in);
-			is_tag_name_complete = false;
-			switch (a_in)
-			{
-				case ' ':
-				case '\t':
-					a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
-					is_tag_name_complete = true;
-					break;
-
-				case '>':
-					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
-					is_tag_name_complete = true;
-					break;
-
-				default:
-					fast_aleck_buffer_append_char(&a_state->tag_name, a_in);
-					break;
-			}
-			if (is_tag_name_complete)
-				_fa_handle_tag_name(a_state, out_buf);
+		case _fa_fsm_text_state_ampam:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&am", 3);
 			break;
 
-		case _fa_fsm_tag_state_attr:
-			fast_aleck_buffer_append_char(out_buf, a_in);
-			switch (a_in)
-			{
-				case '"':
-					a_state->fsm_tag_state = _fa_fsm_tag_state_attr_dquo;
-					break;
-
-				case '\'':
-					a_state->fsm_tag_state = _fa_fsm_tag_state_attr_squo;
-					break;
-
-				case '>':
-					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
-					break;
-			}
+		case _fa_fsm_text_state_ampamp:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "&amp", 4);
 			break;
 
-		case _fa_fsm_tag_state_attr_squo:
-			fast_aleck_buffer_append_char(out_buf, a_in);
-			if ('\'' == a_in)
-				a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
+		case _fa_fsm_text_state_dot:
+			fast_aleck_buffer_unchecked_append_char(out_buf, '.');
 			break;
 
-		case _fa_fsm_tag_state_attr_dquo:
-			fast_aleck_buffer_append_char(out_buf, a_in);
-			if ('"' == a_in)
-				a_state->fsm_tag_state = _fa_fsm_tag_state_attr;
+		case _fa_fsm_text_state_dotdot:
+			fast_aleck_buffer_unchecked_append_string(out_buf, "..", 2);
+			break;
+
+		case _fa_fsm_text_state_dash:
+			fast_aleck_buffer_unchecked_append_char(out_buf, '-');
+			break;
+
+		case _fa_fsm_text_state_dashdash:
+			_fa_append_mdash(out_buf, a_state);
+			break;
+
+		default:
 			break;
 	}
+
+	a_state->fsm_state = _fa_fsm_text_state_start;
 }
 
-// FIXME everything below here is a bit icky
+static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	_fa_flush_text_state(a_state, out_buf);
+
+	a_state->is_at_start_of_run = true;
+	a_state->last_char = '\0';
+	a_state->fsm_state = 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
 {
@@ -437,14 +458,13 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 					case 'k': case 'l': case 'm': case 'n': case 'o':
 					case 'p': case 'q': case 'r': case 's': case 't':
 					case 'u': case 'v': case 'w': case 'x': case 'y': case 'z': 
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->out_diff_last_char             = out_buf->cur - out_buf->start;
 						a_state->letter_found                   = 1;
 						a_state->chars_found_after_space        = 1;
 						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
 						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
 						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 						break;
 
 					case 'A': case 'B': case 'C': case 'D': case 'E': 
@@ -462,7 +482,7 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
 						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
 						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 						break;
 
 					case '1': case '2': case '3': case '4': case '5': 
@@ -475,11 +495,10 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 						a_state->out_diff_last_char_after_space = out_buf->cur - out_buf->start;
 						a_state->out_diff_first_real_space      = a_state->out_diff_first_space;
 						a_state->out_diff_last_real_space       = a_state->out_diff_last_space;
-						fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 						break;
 		
 					case '\t': case ' ': case '\r': case '\n':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->out_diff_last_char = out_buf->cur - out_buf->start;
 						if (a_state->chars_found_after_space)
 							a_state->out_diff_first_space = -1;
@@ -490,56 +509,50 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 						if (a_state->out_diff_last_char_after_space >= 0)
 							a_state->out_diff_last_char_before_space = a_state->out_diff_last_char_after_space;
 						a_state->out_diff_last_char_after_space = -1;
-						fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 						break;
 		
 					case '.':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						a_state->fsm_state = _fa_fsm_text_state_dot;
 						break;
 		
 					case '-':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						a_state->fsm_state = _fa_fsm_text_state_dash;
 						break;
 		
 					case '\'':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						if (_fa_should_open_quote(a_state->last_char))
-							_fa_append_single_quote_start(out_buf, a_state->is_at_start_of_run && !a_state->is_in_title && a_state->config.wrap_quotes);
+							_fa_append_single_quote_start(out_buf, a_state);
 						else
-							_fa_append_single_quote_end(out_buf, a_state->is_at_start_of_run && !a_state->is_in_title && a_state->config.wrap_quotes);
+							_fa_append_single_quote_end(out_buf, a_state);
 						break;
 					
 					case '"':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						if (_fa_should_open_quote(a_state->last_char))
-							_fa_append_double_quote_start(out_buf, a_state->is_at_start_of_run && !a_state->is_in_title && a_state->config.wrap_quotes);
+							_fa_append_double_quote_start(out_buf, a_state);
 						else
-							_fa_append_double_quote_end(out_buf, a_state->is_at_start_of_run && !a_state->is_in_title && a_state->config.wrap_quotes);
+							_fa_append_double_quote_end(out_buf, a_state);
 						break;
 							
 					case '&':
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						a_state->fsm_state = _fa_fsm_text_state_amp;
 						break;
 		
 					default:
-						_fa_wrap_caps(a_state, out_buf);
 						a_state->chars_found_after_space = 1;
 						a_state->out_diff_last_char = out_buf->cur - out_buf->start;
-						fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+						_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 						break;
 				}
 			}
 			else
 			{
-				fast_aleck_buffer_unchecked_append_char(out_buf, a_in);
+				_fa_feed_handle_body_text_caps_char(a_state, a_in, out_buf);
 			}
 			a_state->is_at_start_of_run = 0;
 			break;
@@ -581,7 +594,7 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 			if (a_in == ';')
 			{
 				if (a_state->config.wrap_amps && !a_state->is_in_title)
-					_fa_append_wrapped_amp(out_buf);
+					_fa_append_wrapped_amp(out_buf, a_state);
 				else
 					fast_aleck_buffer_unchecked_append_string(out_buf, "&amp;", 5);
 				a_state->fsm_state = _fa_fsm_text_state_start;
@@ -604,11 +617,11 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
 			}
 			break;
-		
+
 		case _fa_fsm_text_state_dotdot:
 			if (a_in == '.')
 			{
-				_fa_append_ellipsis(out_buf);
+				_fa_append_ellipsis(out_buf, a_state);
 				a_state->fsm_state = _fa_fsm_text_state_start;
 			}
 			else
@@ -618,7 +631,7 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
 			}
 			break;
-		
+
 		case _fa_fsm_text_state_dash:
 			if (a_in == '-')
 				a_state->fsm_state = _fa_fsm_text_state_dashdash;
@@ -629,31 +642,92 @@ void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_a
 				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
 			}
 			break;
-			
+
 		case _fa_fsm_text_state_dashdash:
 			if (a_in == '-')
 			{
-				_fa_append_mdash(out_buf);
+				_fa_append_mdash(out_buf, a_state);
 				a_state->fsm_state = _fa_fsm_text_state_start;
 			}
 			else
 			{
-				_fa_append_mdash(out_buf);
+				_fa_append_mdash(out_buf, a_state);
 				a_state->fsm_state = _fa_fsm_text_state_start;
 				_fa_feed_handle_body_text_char(a_state, a_in, out_buf);
 			}
 			break;
 	}
 
-	a_state->last_char = *(out_buf->cur-1);
+	a_state->last_char = a_in;//*(out_buf->cur-1);
 }
-
-//////////////////////////////////////////////////////////////////////////////
 
 static inline bool _fa_should_open_quote(char in)
 {
 	return in == '\0' || in == '(' || isspace(in);
 }
+
+//////////////////////////////////////////////////////////////////////////////
+
+static void _fa_flush_caps_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	size_t size = a_state->caps_buf.cur - a_state->caps_buf.start;
+	if (!a_state->is_in_title && a_state->config.wrap_caps && a_state->char_found && size >= 2)
+	{
+		char *s1 = "<span class=\"caps\">";
+		char *s2 = "</span>";
+
+		fast_aleck_buffer_ensure_remaining(out_buf, size + strlen(s1) + strlen(s2));
+		memcpy(out_buf->cur, s1, strlen(s1));
+		out_buf->cur += strlen(s1);
+		memcpy(out_buf->cur, a_state->caps_buf.start, size);
+		out_buf->cur += size;
+		memcpy(out_buf->cur, s2, strlen(s2));
+		out_buf->cur += strlen(s2);
+		fast_aleck_buffer_clear(&a_state->caps_buf);
+	}
+	else if (size > 0)
+	{
+		fast_aleck_buffer_ensure_remaining(out_buf, size);
+		memcpy(out_buf->cur, a_state->caps_buf.start, size);
+		out_buf->cur += size;
+		fast_aleck_buffer_clear(&a_state->caps_buf);
+	}
+
+	a_state->char_found = false;
+}
+
+static void _fa_finish_caps_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	_fa_flush_caps_state(a_state, out_buf);
+}
+
+void _fa_feed_handle_body_text_caps_string(fast_aleck_state *a_state, char *a_in, fast_aleck_buffer *out_buf)
+{
+	for (; *a_in; a_in++)
+		_fa_feed_handle_body_text_caps_char(a_state, *a_in, out_buf);
+}
+
+void _fa_feed_handle_body_text_caps_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
+{
+	// TODO probably possible to keep only track of last char
+
+	if (a_in >= 'A' && a_in <= 'Z')
+	{
+		a_state->char_found = true;
+		fast_aleck_buffer_append_char(&a_state->caps_buf, a_in);
+	}
+	else if (a_in >= '0' && a_in <= '9')
+	{
+		fast_aleck_buffer_append_char(&a_state->caps_buf, a_in);
+	}
+	else
+	{
+		_fa_flush_caps_state(a_state, out_buf);
+		fast_aleck_buffer_append_char(out_buf, a_in);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 static inline void _fa_handle_block_tag(fast_aleck_state *state, fast_aleck_buffer *buf)
 {
@@ -683,73 +757,51 @@ static inline void _fa_handle_block_tag(fast_aleck_state *state, fast_aleck_buff
 	state->out_diff_last_char              = -1;
 }
 
-static inline void _fa_wrap_caps(fast_aleck_state *state, fast_aleck_buffer *buf)
+//////////////////////////////////////////////////////////////////////////////
+
+static inline void _fa_append_ellipsis(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	if (!state->is_in_title && state->config.wrap_caps && state->caps_found && state->out_diff_last_caps >= 0 && state->out_diff_last_caps - state->out_diff_first_caps > 0)
-	{
-		char *s1 = "<span class=\"caps\">";
-		char *s2 = "</span>";
-
-		memmove(
-			buf->start + state->out_diff_first_caps + strlen(s1),
-			buf->start + state->out_diff_first_caps,
-			state->out_diff_last_caps + 1 - state->out_diff_first_caps);
-		memcpy(
-			buf->start + state->out_diff_first_caps,
-			s1,
-			strlen(s1));
-		buf->cur += strlen(s1);
-		memcpy(buf->cur, s2, strlen(s2));
-		buf->cur += strlen(s2);
-	}
-
-	state->out_diff_first_caps = -1;
-	state->out_diff_last_caps  = -1;
+	_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\xA6", buf);
 }
 
-static inline void _fa_append_ellipsis(fast_aleck_buffer *buf)
+static inline void _fa_append_mdash(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\xA6", 3);
+	_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\x94", buf);
 }
 
-static inline void _fa_append_mdash(fast_aleck_buffer *buf)
+static inline void _fa_append_single_quote_start(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x94", 3);
-}
-
-static inline void _fa_append_single_quote_start(fast_aleck_buffer *buf, bool a_should_wrap)
-{
-	if (a_should_wrap)
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">\xE2\x80\x98</span>", 28);
+	if (state->is_at_start_of_run && !state->is_in_title && state->config.wrap_quotes)
+		_fa_feed_handle_body_text_caps_string(state, "<span class=\"quo\">\xE2\x80\x98</span>", buf);
 	else
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x98", 3);
+		_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\x98", buf);
 }
 
-static inline void _fa_append_single_quote_end(fast_aleck_buffer *buf, bool a_should_wrap)
+static inline void _fa_append_single_quote_end(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	if (a_should_wrap)
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"quo\">\xE2\x80\x99", 28);
+	if (state->is_at_start_of_run && !state->is_in_title && state->config.wrap_quotes)
+		_fa_feed_handle_body_text_caps_string(state, "<span class=\"quo\">\xE2\x80\x99", buf);
 	else
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x99", 3);
+		_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\x99", buf);
 }
 
-static inline void _fa_append_double_quote_start(fast_aleck_buffer *buf, bool a_should_wrap)
+static inline void _fa_append_double_quote_start(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	if (a_should_wrap)
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">\xE2\x80\x9C</span>", 29);
+	if (state->is_at_start_of_run && !state->is_in_title && state->config.wrap_quotes)
+		_fa_feed_handle_body_text_caps_string(state, "<span class=\"dquo\">\xE2\x80\x9C</span>", buf);
 	else
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9C", 3);
+		_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\x9C", buf);
 }
 
-static inline void _fa_append_double_quote_end(fast_aleck_buffer *buf, bool a_should_wrap)
+static inline void _fa_append_double_quote_end(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	if (a_should_wrap)
-		fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"dquo\">\xE2\x80\x9D</span>", 29);
+	if (state->is_at_start_of_run && !state->is_in_title && state->config.wrap_quotes)
+		_fa_feed_handle_body_text_caps_string(state, "<span class=\"dquo\">\xE2\x80\x9D</span>", buf);
 	else
-		fast_aleck_buffer_unchecked_append_string(buf, "\xE2\x80\x9D", 3);
+		_fa_feed_handle_body_text_caps_string(state, "\xE2\x80\x9D", buf);
 }
 
-static inline void _fa_append_wrapped_amp(fast_aleck_buffer *buf)
+static inline void _fa_append_wrapped_amp(fast_aleck_buffer *buf, fast_aleck_state *state)
 {
-	fast_aleck_buffer_unchecked_append_string(buf, "<span class=\"amp\">&amp;</span>", 30);
+	_fa_feed_handle_body_text_caps_string(state, "<span class=\"amp\">&amp;</span>", buf);
 }
