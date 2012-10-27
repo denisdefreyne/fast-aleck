@@ -19,11 +19,6 @@ void fast_aleck_buffer_create(fast_aleck_buffer *b, size_t size)
 	b->size = size;
 }
 
-inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b)
-{
-	free(b->start);
-}
-
 void fast_aleck_buffer_ensure_remaining(fast_aleck_buffer *b, size_t remaining)
 {
 	assert(remaining > 0);

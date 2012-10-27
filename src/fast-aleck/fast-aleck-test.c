@@ -375,6 +375,14 @@ int main(void)
 		"<li><span>line&nbsp;one</span></li>\n<li><span>line&nbsp;two</span></li>");
 
 	fast_aleck_test(&test_case,
+		"A B C D",
+		"A B C&nbsp;D");
+
+	fast_aleck_test(&test_case,
+		"<h1><a href='#'>A B C D</a></h1>",
+		"<h1><a href='#'>A B C&nbsp;D</a></h1>");
+
+	fast_aleck_test(&test_case,
 		"<h1><a href='#'>why won't this widon't</a></h1>",
 		"<h1><a href='#'>why won’t this&nbsp;widon’t</a></h1>");
 

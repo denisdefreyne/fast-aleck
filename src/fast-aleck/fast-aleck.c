@@ -18,9 +18,11 @@ void fast_aleck_init(fast_aleck_state *state, fast_aleck_config config)
 
 	state->config = config;
 
-	fast_aleck_buffer_create(&state->tag_name,   10);
-	fast_aleck_buffer_create(&state->caps_buf,   50);
-	fast_aleck_buffer_create(&state->widont_buf, 50);
+	fast_aleck_buffer_create(&state->tag_name,                10);
+	fast_aleck_buffer_create(&state->caps_buf,                50);
+	fast_aleck_buffer_create(&state->widont_space_buf_before, 10);
+	fast_aleck_buffer_create(&state->widont_space_buf_after,  10);
+	fast_aleck_buffer_create(&state->widont_buf,              50);
 
 	state->is_at_start_of_run = 1;
 
@@ -862,17 +864,19 @@ static void _fa_flush_widont_state(fast_aleck_state *a_state, fast_aleck_buffer 
 		if (a_state->widont_has_preceding_chars)
 			_fa_append_nbsp(out_buf, a_state);
 		else
-			fast_aleck_buffer_append_char(out_buf, ' ');
+			fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_space_buf_before);
 
 		// text itself
 		fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_buf);
 
 		// space after
 		if (a_state->widont_buf_ends_with_space)
-			fast_aleck_buffer_append_char(out_buf, ' ');
+			fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_space_buf_after);
 	}
 
 	fast_aleck_buffer_clear(&a_state->widont_buf);
+	fast_aleck_buffer_clear(&a_state->widont_space_buf_before);
+	fast_aleck_buffer_clear(&a_state->widont_space_buf_after);
 
 	a_state->widont_buf_starts_with_space = 0;
 	a_state->widont_buf_ends_with_space   = 0;
@@ -897,16 +901,24 @@ static void _fa_feed_handle_body_text_widont_char(fast_aleck_state *a_state, cha
 	{
 		if (a_state->widont_buf_ends_with_space)
 		{
-			if (!cur_char_is_space)
+			if (cur_char_is_space)
 			{
-				fast_aleck_buffer_append_char(out_buf, ' ');
+				fast_aleck_buffer_append_char(&a_state->widont_space_buf_after, a_in);
+			}
+			else
+			{
+				fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_space_buf_before);
+				fast_aleck_buffer_clear(&a_state->widont_space_buf_before);
+
+				fast_aleck_buffer_swap(&a_state->widont_space_buf_before, &a_state->widont_space_buf_after);
+				fast_aleck_buffer_clear(&a_state->widont_space_buf_after);
+				a_state->widont_buf_ends_with_space = 0;
 
 				fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_buf);
 				fast_aleck_buffer_clear(&a_state->widont_buf);
 
 				fast_aleck_buffer_append_char(&a_state->widont_buf, a_in);
 
-				a_state->widont_buf_ends_with_space = 0;
 				a_state->widont_has_preceding_chars = 1;
 			}
 		}
@@ -914,11 +926,13 @@ static void _fa_feed_handle_body_text_widont_char(fast_aleck_state *a_state, cha
 		{
 			if (cur_char_is_space)
 			{
+				fast_aleck_buffer_append_char(&a_state->widont_space_buf_after, a_in);
 				a_state->widont_buf_ends_with_space = 1;
 			}
 			else
 			{
 				fast_aleck_buffer_append_char(&a_state->widont_buf, a_in);
+				a_state->widont_has_preceding_chars = 1;
 			}
 		}
 	}
@@ -926,6 +940,7 @@ static void _fa_feed_handle_body_text_widont_char(fast_aleck_state *a_state, cha
 	{
 		if (cur_char_is_space)
 		{
+			fast_aleck_buffer_append_char(&a_state->widont_space_buf_before, a_in);
 			a_state->widont_buf_starts_with_space = 1;
 			a_state->widont_buf_ends_with_space   = 0;
 		}

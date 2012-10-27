@@ -2,6 +2,7 @@
 #define __FAST_ALECK_BUFFER_H__
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct _fast_aleck_buffer fast_aleck_buffer;
@@ -13,12 +14,24 @@ struct _fast_aleck_buffer {
 };
 
 void fast_aleck_buffer_create(fast_aleck_buffer *b, size_t size);
-inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b);
 void fast_aleck_buffer_ensure_remaining(fast_aleck_buffer *b, size_t remaining);
+
+static inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b)
+{
+	free(b->start);
+}
 
 static inline void fast_aleck_buffer_clear(fast_aleck_buffer *b)
 {
 	b->cur = b->start;
+}
+
+static inline void fast_aleck_buffer_swap(fast_aleck_buffer *a, fast_aleck_buffer *b)
+{
+	fast_aleck_buffer tmp_buf;
+	tmp_buf = *a;
+	memcpy(a, b, sizeof (fast_aleck_buffer));
+	memcpy(b, &tmp_buf, sizeof (fast_aleck_buffer));
 }
 
 static inline void fast_aleck_buffer_unchecked_append_char(fast_aleck_buffer *b, char c)

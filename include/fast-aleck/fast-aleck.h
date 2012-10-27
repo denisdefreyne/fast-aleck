@@ -83,6 +83,8 @@ typedef struct _fast_aleck_state {
 
 	// widont state
 	fast_aleck_buffer widont_buf;
+	fast_aleck_buffer widont_space_buf_before;
+	fast_aleck_buffer widont_space_buf_after;
 	bool              widont_buf_starts_with_space;
 	bool              widont_buf_ends_with_space;
 	bool              widont_has_preceding_chars;
