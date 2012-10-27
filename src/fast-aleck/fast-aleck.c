@@ -858,11 +858,18 @@ static void _fa_flush_widont_state(fast_aleck_state *a_state, fast_aleck_buffer 
 {
 	if (a_state->widont_buf_starts_with_space)
 	{
+		// space before
 		if (a_state->widont_has_preceding_chars)
 			_fa_append_nbsp(out_buf, a_state);
 		else
 			fast_aleck_buffer_append_char(out_buf, ' ');
+
+		// text itself
 		fast_aleck_buffer_append_buffer(out_buf, &a_state->widont_buf);
+
+		// space after
+		if (a_state->widont_buf_ends_with_space)
+			fast_aleck_buffer_append_char(out_buf, ' ');
 	}
 
 	fast_aleck_buffer_clear(&a_state->widont_buf);
