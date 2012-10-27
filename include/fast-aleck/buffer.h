@@ -1,6 +1,7 @@
 #ifndef __FAST_ALECK_BUFFER_H__
 #define __FAST_ALECK_BUFFER_H__
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +25,11 @@ static inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b)
 static inline void fast_aleck_buffer_clear(fast_aleck_buffer *b)
 {
 	b->cur = b->start;
+}
+
+static inline bool fast_aleck_buffer_is_empty(fast_aleck_buffer *b)
+{
+	return b->cur == b->start;
 }
 
 static inline void fast_aleck_buffer_swap(fast_aleck_buffer *a, fast_aleck_buffer *b)
