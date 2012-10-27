@@ -187,7 +187,12 @@ redo:
 					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
 					a_state->is_closing_tag = true;
 					break;
-			
+
+				case '!':
+					fast_aleck_buffer_append_char(out_buf, a_in);
+					a_state->fsm_tag_state = _fa_fsm_tag_state_ltexcl;
+					break;
+
 				default:
 					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
 					goto redo;
@@ -217,6 +222,185 @@ redo:
 			}
 			if (is_tag_name_complete)
 				_fa_handle_tag_name(a_state, out_buf);
+			break;
+
+		case _fa_fsm_tag_state_ltexcl:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '[':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_1;
+					break;
+
+				case '-':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment_start_1;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_comment_start_1:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '-':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_comment:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '-':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment_end_1;
+					break;
+			}
+			break;
+
+		case _fa_fsm_tag_state_comment_end_1:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '-':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment_end_2;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment;
+			}
+			break;
+
+		case _fa_fsm_tag_state_comment_end_2:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '>':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_comment;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_1:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case 'C':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_2;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_2:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case 'D':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_3;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_3:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case 'A':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_4;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_4:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case 'T':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_5;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_5:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case 'A':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_start_6;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_start_6:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '[':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_tag_name;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case ']':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_end_1;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_end_1:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case ']':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata_end_2;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata;
+			}
+			break;
+
+		case _fa_fsm_tag_state_cdata_end_2:
+			fast_aleck_buffer_append_char(out_buf, a_in);
+			switch (a_in)
+			{
+				case '>':
+					a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+					break;
+
+				default:
+					a_state->fsm_tag_state = _fa_fsm_tag_state_cdata;
+			}
 			break;
 
 		case _fa_fsm_tag_state_attr:
@@ -311,12 +495,16 @@ static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *ou
 			{
 				case 'd':
 					if (0 == strncmp("iv", tag_name+1, 2))
+					{
 						is_block = true;
+					}
 					break;
 
 				case 'k':
 					if (0 == strncmp("bd", tag_name+1, 2))
+					{
 						_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(kbd);
+					}
 					break;
 
 				case 'p':
@@ -329,7 +517,9 @@ static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *ou
 
 				case 'v':
 					if (0 == strncmp("ar", tag_name+1, 2))
+					{
 						_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(var);
+					}
 					break;
 			}
 			break;
@@ -339,39 +529,53 @@ static void _fa_handle_tag_name(fast_aleck_state *a_state, fast_aleck_buffer *ou
 			{
 				case 'c':
 					if (0 == strncmp("ode", tag_name+1, 3))
+					{
 						_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(code);
+					}
 					break;
 
 				case 'm':
 					if (0 == strncmp("ath", tag_name+1, 3))
+					{
 						_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(math);
+					}
 					break;
 
 				case 's':
 					if (0 == strncmp("amp", tag_name+1, 3))
+					{
 						_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(samp);
+					}
 					break;
 			}
 			break;
 
 		case 5: // title
 			if (0 == strncmp("title", tag_name, 5))
+			{
 				a_state->is_in_title = !a_state->is_closing_tag;
+			}
 			break;
 
 		case 6: // script
 			if (0 == strncmp("script", tag_name, 6))
+			{
 				_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(script);
+			}
 			break;
 
 		case 8: // textarea
 			if (0 == strncmp("textarea", tag_name, 8))
+			{
 				_FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(textarea);
+			}
 			break;
 
 		case 10: // blockquote
 			if (0 == strncmp("blockquote", tag_name, 10))
+			{
 				is_block = true;
+			}
 			break;
 
 		default:

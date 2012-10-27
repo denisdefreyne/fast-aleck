@@ -17,8 +17,22 @@ typedef struct _fast_aleck_config {
 // The FSM tag state (private)
 enum _fa_fsm_tag_state {
 	_fa_fsm_tag_state_entry,
-	_fa_fsm_tag_state_tag_start,
+	_fa_fsm_tag_state_tag_start, // <
 	_fa_fsm_tag_state_tag_name,
+	_fa_fsm_tag_state_ltexcl,          // <!
+	_fa_fsm_tag_state_comment_start_1, // <!-
+	_fa_fsm_tag_state_comment,         // <!--
+	_fa_fsm_tag_state_comment_end_1,   // -
+	_fa_fsm_tag_state_comment_end_2,   // --
+	_fa_fsm_tag_state_cdata_start_1,   // <![
+	_fa_fsm_tag_state_cdata_start_2,   // <![C
+	_fa_fsm_tag_state_cdata_start_3,   // <![CD
+	_fa_fsm_tag_state_cdata_start_4,   // <![CDA
+	_fa_fsm_tag_state_cdata_start_5,   // <![CDAT
+	_fa_fsm_tag_state_cdata_start_6,   // <![CDATA
+	_fa_fsm_tag_state_cdata,           // <![CDATA[
+	_fa_fsm_tag_state_cdata_end_1,     // ]
+	_fa_fsm_tag_state_cdata_end_2,     // ]]
 	_fa_fsm_tag_state_attr,
 	_fa_fsm_tag_state_attr_squo,
 	_fa_fsm_tag_state_attr_dquo

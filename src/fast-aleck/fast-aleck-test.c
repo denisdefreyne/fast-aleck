@@ -91,6 +91,10 @@ int main(void)
 		"Before… yes. <![CDATA[Not here! & ] ... ] &amp > --]]> After… yes");
 
 	fast_aleck_test(&test_case,
+		"Before... yes. <!--Not here! & < > ! -- &amp --x --> After... yes",
+		"Before… yes. <!--Not here! & < > ! -- &amp --x --> After… yes");
+
+	fast_aleck_test(&test_case,
 		"Before... yes. <img alt=\"During... no.\"> After... yes.",
 		"Before… yes. <img alt=\"During... no.\"> After… yes.");
 
