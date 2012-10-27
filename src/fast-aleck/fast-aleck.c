@@ -644,7 +644,7 @@ static void _fa_finish_text_state(fast_aleck_state *a_state, fast_aleck_buffer *
 
 //////////////////////////////////////////////////////////////////////////////
 
-void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
+static void _fa_feed_handle_body_text_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
 {
 	fast_aleck_buffer_ensure_remaining(out_buf, 30);
 
@@ -887,13 +887,13 @@ static void _fa_finish_caps_state(fast_aleck_state *a_state, fast_aleck_buffer *
 	_fa_flush_caps_state(a_state, out_buf);
 }
 
-void _fa_feed_handle_body_text_caps_string(fast_aleck_state *a_state, char *a_in, fast_aleck_buffer *out_buf)
+static void _fa_feed_handle_body_text_caps_string(fast_aleck_state *a_state, char *a_in, fast_aleck_buffer *out_buf)
 {
 	for (; *a_in; a_in++)
 		_fa_feed_handle_body_text_caps_char(a_state, *a_in, out_buf);
 }
 
-void _fa_feed_handle_body_text_caps_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
+static void _fa_feed_handle_body_text_caps_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
 {
 	// TODO probably possible to keep only track of last char
 
