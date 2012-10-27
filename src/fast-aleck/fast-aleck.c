@@ -122,13 +122,6 @@ static void _fa_flush_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *ou
 			break;
 	}
 
-	a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
-}
-
-static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
-{
-	_fa_flush_tag_state(a_state, out_buf);
-
 	a_state->fsm_tag_state          = 0;
 	a_state->is_closing_tag         = false;
 	fast_aleck_buffer_clear(&a_state->tag_name);
@@ -142,6 +135,13 @@ static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *o
 	a_state->is_in_math             = false;
 	a_state->is_in_textarea         = false;
 	a_state->is_in_title            = false;
+
+	a_state->fsm_tag_state = _fa_fsm_tag_state_entry;
+}
+
+static void _fa_finish_tag_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
+{
+	_fa_flush_tag_state(a_state, out_buf);
 }
 
 static void _fa_feed_handle_tag_char(fast_aleck_state *a_state, char a_in, fast_aleck_buffer *out_buf)
@@ -865,9 +865,9 @@ static void _fa_flush_widont_state(fast_aleck_state *a_state, fast_aleck_buffer 
 	if (!a_state->config.widont)
 		return;
 
+	// space before
 	if (_fa_widont_starts_with_space(a_state))
 	{
-		// space before
 		if (a_state->widont_has_preceding_chars)
 			_fa_append_nbsp(out_buf, a_state);
 		else
@@ -884,7 +884,7 @@ static void _fa_flush_widont_state(fast_aleck_state *a_state, fast_aleck_buffer 
 	fast_aleck_buffer_clear(&a_state->widont_space_buf_before);
 	fast_aleck_buffer_clear(&a_state->widont_space_buf_after);
 
-	a_state->widont_has_preceding_chars   = 0;
+	a_state->widont_has_preceding_chars = 0;
 }
 
 static void _fa_finish_widont_state(fast_aleck_state *a_state, fast_aleck_buffer *out_buf)
