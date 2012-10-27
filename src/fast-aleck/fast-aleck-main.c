@@ -98,7 +98,8 @@ int main(int argc, char **argv)
 
 	// Write
 	fprintf(stderr, "done in %li.%06is\n",
-        (int) (tp2.tv_sec - tp1.tv_sec, tp2.tv_usec - tp1.tv_usec));
+        (long) (tp2.tv_sec - tp1.tv_sec),
+		(int)  (tp2.tv_usec - tp1.tv_usec));
 	fputs(out, stdout);
 
 	return 0;

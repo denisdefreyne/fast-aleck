@@ -24,7 +24,7 @@ inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b)
 void fast_aleck_buffer_ensure_remaining(fast_aleck_buffer *b, size_t remaining)
 {
 	size_t new_size = b->size;
-	while (b->start + new_size - b->cur < remaining)
+	while (b->start + new_size < remaining + b->cur)
 		new_size *= 2;	
 	if (new_size == b->size)
 		return;
