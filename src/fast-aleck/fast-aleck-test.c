@@ -28,8 +28,6 @@ int main(void)
 	test_case.wrap_quotes = 0;
 	test_case.widont      = 0;
 
-	fprintf(stdout, "1..%i\n", test_case.count);
-
 	fast_aleck_test(&test_case,
 		"I am a simple sentence.",
 		"I am a simple sentence.");
@@ -447,6 +445,8 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"Do NOT wrap caps if I don't ask to!",
 		"Do NOT wrap caps if I don’t ask to!");
+
+	fprintf(stdout, "1..%i\n", test_case.count);
 
 	return (test_case.fails > 0 ? 1 : 0);
 }
