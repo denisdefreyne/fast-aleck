@@ -32,6 +32,13 @@ static inline void fast_aleck_buffer_unchecked_append_string(fast_aleck_buffer *
 	b->cur += length;
 }
 
+static inline void fast_aleck_buffer_append_buffer(fast_aleck_buffer *b, fast_aleck_buffer *b2)
+{
+	ptrdiff_t diff = b2->cur - b2->start;
+	memcpy(b->cur, b2->start, diff);
+	b->cur += diff;
+}
+
 static inline void fast_aleck_buffer_append_char(fast_aleck_buffer *b, char c)
 {
 	fast_aleck_buffer_ensure_remaining(b, 1);

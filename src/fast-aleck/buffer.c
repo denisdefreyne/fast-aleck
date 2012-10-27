@@ -1,11 +1,14 @@
 #include <fast-aleck/buffer.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 void fast_aleck_buffer_create(fast_aleck_buffer *b, size_t size)
 {
+	assert(size > 0);
+
 	b->start = malloc(size);
 	if (!b->start)
 	{
@@ -23,8 +26,11 @@ inline void fast_aleck_buffer_destroy(fast_aleck_buffer *b)
 
 void fast_aleck_buffer_ensure_remaining(fast_aleck_buffer *b, size_t remaining)
 {
+	assert(remaining > 0);
+	assert(b->size > 0);
+
 	size_t new_size = b->size;
-	while (b->start + new_size < remaining + b->cur)
+	while (b->start + new_size < b->cur + remaining)
 		new_size *= 2;	
 	if (new_size == b->size)
 		return;

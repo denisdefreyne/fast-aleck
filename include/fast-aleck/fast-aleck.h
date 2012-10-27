@@ -81,16 +81,10 @@ typedef struct _fast_aleck_state {
 	fast_aleck_buffer caps_buf;
 	bool char_found;
 
-	// old
-	bool chars_found_after_space;
-
-	ptrdiff_t out_diff_first_space;
-	ptrdiff_t out_diff_first_real_space;
-	ptrdiff_t out_diff_last_space;
-	ptrdiff_t out_diff_last_real_space;
-	ptrdiff_t out_diff_last_char;
-	ptrdiff_t out_diff_last_char_before_space;
-	ptrdiff_t out_diff_last_char_after_space;
+	// widont state
+	fast_aleck_buffer widont_buf;
+	bool              widont_buf_starts_with_space;
+	bool              widont_buf_ends_with_space;
 } fast_aleck_state;
 
 // Initialize the given configuration to the default parameters (all options
