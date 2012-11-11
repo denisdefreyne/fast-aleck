@@ -307,6 +307,14 @@ int main(void)
 	test_case.widont = 1;
 
 	fast_aleck_test(&test_case,
+		"<p>Foo bar baz. Woof meow moo.</p>",
+		"<p>Foo bar baz. Woof meow&nbsp;moo.</p>");
+
+	fast_aleck_test(&test_case,
+		"<p>Foo-bar baz. </p>",
+		"<p>Foo-bar&nbsp;baz. </p>");
+
+	fast_aleck_test(&test_case,
 		"<p>Foo bar baz.</p><p>Woof meow moo.</p>",
 		"<p>Foo bar&nbsp;baz.</p><p>Woof meow&nbsp;moo.</p>");
 
