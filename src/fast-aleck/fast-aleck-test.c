@@ -451,7 +451,17 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"<p>MongoDB is better than PostgreSQL</p>",
 		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>");
-		
+	
+	// COMBINATION TESTS
+
+	test_case.wrap_caps   = 1;
+	test_case.widont      = 1;
+	test_case.wrap_amps   = 0;
+	test_case.wrap_quotes = 0;
+	fast_aleck_test(&test_case,
+		"<p>One Two <b>THR</b>EE!</p>",
+		"<p>One Two <b><span class=\"caps\">THR</span></b><span class=\"caps\">EE</span>!</p>");
+
 	test_case.wrap_caps = 0;
 
 	fast_aleck_test(&test_case,
