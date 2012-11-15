@@ -45,6 +45,10 @@ int main(void)
 		"This sentence ends in two periods..");
 
 	fast_aleck_test(&test_case,
+		"This sentence ends in a number 1. ",
+		"This sentence ends in a number 1. ");
+
+	fast_aleck_test(&test_case,
 		"This sentence ends in two periods..</span>",
 		"This sentence ends in two periods..</span>");
 
@@ -303,6 +307,14 @@ int main(void)
 	test_case.widont = 1;
 
 	fast_aleck_test(&test_case,
+		"<p>Foo bar baz. Woof meow moo.</p>",
+		"<p>Foo bar baz. Woof meow&nbsp;moo.</p>");
+
+	fast_aleck_test(&test_case,
+		"<p>Foo-bar baz. </p>",
+		"<p>Foo-bar&nbsp;baz. </p>");
+
+	fast_aleck_test(&test_case,
 		"<p>Foo bar baz.</p><p>Woof meow moo.</p>",
 		"<p>Foo bar&nbsp;baz.</p><p>Woof meow&nbsp;moo.</p>");
 
@@ -447,11 +459,11 @@ int main(void)
 	fast_aleck_test(&test_case,
 		"<title>Hello, this is DENIS speaking!</title>",
 		"<title>Hello, this is DENIS speaking!</title>");
-		
+
 	fast_aleck_test(&test_case,
 		"<p>MongoDB is better than PostgreSQL</p>",
 		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>");
-	
+
 	// COMBINATION TESTS
 
 	test_case.wrap_caps   = 1;
