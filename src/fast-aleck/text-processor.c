@@ -39,6 +39,7 @@ void fa_text_processor_state_init(fa_text_processor_state *state) {
 }
 
 void fa_text_processor_handle_token(fa_state *state, fa_token token) {
+	// TODO handle token_type_text_without_html
 	if (token.type != fa_token_type_text) {
 		fa_text_processor_pass_on_token(state, token);
 		if (token.type == fa_token_type_block) {
