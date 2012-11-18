@@ -39,13 +39,19 @@ void fa_text_processor_state_init(fa_text_processor_state *state) {
 }
 
 void fa_text_processor_handle_token(fa_state *state, fa_token token) {
-	// TODO handle token_type_text_without_html
-	if (token.type != fa_token_type_text) {
-		fa_text_processor_pass_on_token(state, token);
-		if (token.type == fa_token_type_block) {
-			state->text_processor_state.is_at_start_of_run = true;
-		}
-		return;
+	switch (token.type) {
+		case fa_token_type_text_raw:
+		case fa_token_type_inline:
+			fa_text_processor_pass_on_token(state, token);
+			return;
+
+		case fa_token_type_block:
+			fa_text_processor_pass_on_token(state, token);
+			fa_text_processor_state_init(&state->text_processor_state);
+			return;
+
+		default:
+			break;
 	}
 
 	fa_token current_token;
