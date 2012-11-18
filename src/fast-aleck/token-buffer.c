@@ -28,6 +28,14 @@ void fa_token_buffer_append(fa_token_buffer *buffer, fa_token token) {
 	buffer->_cached_length += token.slice.length;
 }
 
+fa_token fa_token_buffer_at(fa_token_buffer *buffer, size_t i) {
+	return buffer->tokens[i];
+}
+
+size_t fa_token_buffer_count(fa_token_buffer *buffer) {
+	return buffer->size;
+}
+
 size_t fa_token_buffer_get_length(fa_token_buffer *buffer) {
 	return buffer->_cached_length;
 }

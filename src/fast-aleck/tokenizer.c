@@ -23,6 +23,7 @@ void fa_tokenizer_state_init(fa_tokenizer_state *state, char *input, size_t inpu
 	state->is_in_math                 = false;
 	state->is_in_textarea             = false;
 	state->is_in_title                = false;
+	state->_token_buffer              = NULL;
 }
 
 static void _fa_tokenizer_handle_tag_name(fa_state *state);
@@ -434,7 +435,11 @@ static void _fa_tokenizer_handle_tag_name(fa_state *state) {
 
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token) {
 	if (0 < token.slice.length) {
-		fa_text_processor_handle_token(state, token);
+		if (state->tokenizer_state._token_buffer) {
+			fa_token_buffer_append(state->tokenizer_state._token_buffer, token);
+		} else {
+			fa_text_processor_handle_token(state, token);
+		}
 	}
 }
 
@@ -459,7 +464,6 @@ static void _fa_tokenizer_tag_finished(fa_state *state) {
 	state->tokenizer_state.current_token.slice.start  = state->tokenizer_state.input.start+1;
 	state->tokenizer_state.current_token.slice.length = 0;
 
-	// TODO also check title
 	if (state->tokenizer_state.is_in_excluded_element) {
 		state->tokenizer_state.current_token.type = fa_token_type_text_raw;
 	} else if (state->tokenizer_state.is_in_title) {

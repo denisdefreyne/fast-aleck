@@ -47,6 +47,7 @@ struct _fa_tokenizer_state {
 	bool                   is_in_math;
 	bool                   is_in_textarea;
 	bool                   is_in_title;
+	fa_token_buffer        *_token_buffer; // for automated testing only
 };
 typedef struct _fa_tokenizer_state fa_tokenizer_state;
 
