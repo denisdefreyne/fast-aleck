@@ -8,8 +8,6 @@
 #include <fast-aleck/text-processor.h>
 #include <fast-aleck/caps-processor.h>
 
-//TODO when appending quotes, check whether type is html-restricted (e.g. for <title>)
-
 const fa_token _ellipsis_token           = { .slice = { .start = "\xE2\x80\xA6",                             .length = 3  }, .type = fa_token_type_text   };
 const fa_token _mdash_token              = { .slice = { .start = "\xE2\x80\x94",                             .length = 3  }, .type = fa_token_type_text   };
 const fa_token _nbsp_token               = { .slice = { .start = "&nbsp;",                                   .length = 6  }, .type = fa_token_type_text   };
@@ -49,7 +47,9 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 			fa_text_processor_state_init(&state->text_processor_state);
 			return;
 
-		default:
+		case fa_token_type_undefined:
+		case fa_token_type_text_no_html:
+		case fa_token_type_text:
 			break;
 	}
 
@@ -77,13 +77,13 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
-							if (state->text_processor_state.is_at_start_of_run && state->text_processor_state.config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
 								fa_text_processor_pass_on_token(state, _squo_start_wrapped_token);
 							} else {
 								fa_text_processor_pass_on_token(state, _squo_start_token);
 							}
 						} else {
-							if (state->text_processor_state.is_at_start_of_run && state->text_processor_state.config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
 								fa_text_processor_pass_on_token(state, _squo_end_wrapped_token);
 							} else {
 								fa_text_processor_pass_on_token(state, _squo_end_token);
@@ -96,13 +96,13 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
-							if (state->text_processor_state.is_at_start_of_run && state->text_processor_state.config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
 								fa_text_processor_pass_on_token(state, _dquo_start_wrapped_token);
 							} else {
 								fa_text_processor_pass_on_token(state, _dquo_start_token);
 							}
 						} else {
-							if (state->text_processor_state.is_at_start_of_run && state->text_processor_state.config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
 								fa_text_processor_pass_on_token(state, _dquo_end_wrapped_token);
 							} else {
 								fa_text_processor_pass_on_token(state, _dquo_end_token);
@@ -149,9 +149,9 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 
 			case fa_text_processor_fsm_state_ampamp:
 				if (c == ';') {
-					if(state->text_processor_state.config.wrap_amps /* ... and not in title */) {
+					if (state->config.wrap_amps && token.type != fa_token_type_text_no_html) {
 						fa_text_processor_pass_on_token(state, current_token);
-						current_token.slice.start = token.slice.start+1;
+						current_token.slice.start = token.slice.start + 1;
 						current_token.slice.length = 0;
 						fa_text_processor_pass_on_token(state, _amp_wrapped_token);
 					} else {

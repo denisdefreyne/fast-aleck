@@ -16,6 +16,7 @@ void fast_aleck_config_init(fast_aleck_config *config)
 char *fast_aleck(fast_aleck_config a_config, char *a_in, size_t a_in_size, size_t *ao_out_size) {
 	// create state
 	fa_state state;
+	state.config = a_config;
 	fa_tokenizer_state_init(&state.tokenizer_state, a_in, a_in_size);
 	fa_text_processor_state_init(&state.text_processor_state);
 	fa_caps_processor_state_init(&state.caps_processor_state);
