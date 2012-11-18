@@ -226,6 +226,26 @@ int main(void) {
 		"Four &lt; Seventeen");
 
 	fast_aleck_test(&test_suite,
+		"Four &alt; Seventeen",
+		"Four &alt; Seventeen");
+
+	fast_aleck_test(&test_suite,
+		"Four &amt; Seventeen",
+		"Four &amt; Seventeen");
+
+	fast_aleck_test(&test_suite,
+		"Four &ampx; Seventeen",
+		"Four &ampx; Seventeen");
+
+	fast_aleck_test(&test_suite,
+		"Four &amp Seventeen",
+		"Four &amp Seventeen");
+
+	fast_aleck_test(&test_suite,
+		"Four &amp; Seventeen",
+		"Four <span class=\"amp\">&amp;</span> Seventeen");
+
+	fast_aleck_test(&test_suite,
 		"Ampersands &amp; More",
 		"Ampersands <span class=\"amp\">&amp;</span> More");
 

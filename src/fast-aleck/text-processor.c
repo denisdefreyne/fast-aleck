@@ -124,7 +124,7 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 				if (c == 'a')
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampa;
 				else {
-					current_token.slice.length += 1;
+					current_token.slice.length += 2;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
@@ -133,7 +133,7 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 				if (c == 'm')
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampam;
 				else {
-					current_token.slice.length += 2;
+					current_token.slice.length += 3;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
@@ -142,7 +142,7 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 				if (c == 'p')
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampamp;
 				else {
-					current_token.slice.length += 3;
+					current_token.slice.length += 4;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
@@ -155,10 +155,10 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 						current_token.slice.length = 0;
 						fa_text_processor_pass_on_token(state, _amp_wrapped_token);
 					} else {
-						current_token.slice.length += 5;
+						current_token.slice.length += 6;
 					}
 				} else {
-					current_token.slice.length += 4;
+					current_token.slice.length += 5;
 				}
 				state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				break;
