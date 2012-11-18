@@ -25,7 +25,7 @@ static inline bool _fa_should_open_quote(char in) {
 	return in == '\0' || in == '(' || isspace(in);
 }
 
-void fa_text_processor_pass_on_token(fa_state *state, fa_token token) {
+static inline void _fa_text_processor_pass_on_token(fa_state *state, fa_token token) {
 	fa_caps_processor_handle_token(state, token);
 }
 
@@ -39,11 +39,11 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 	switch (token.type) {
 		case fa_token_type_text_raw:
 		case fa_token_type_inline:
-			fa_text_processor_pass_on_token(state, token);
+			_fa_text_processor_pass_on_token(state, token);
 			return;
 
 		case fa_token_type_block:
-			fa_text_processor_pass_on_token(state, token);
+			_fa_text_processor_pass_on_token(state, token);
 			fa_text_processor_state_init(&state->text_processor_state);
 			return;
 
@@ -73,39 +73,39 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 						break;
 
 					case '\'':
-						fa_text_processor_pass_on_token(state, current_token);
+						_fa_text_processor_pass_on_token(state, current_token);
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
 							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
-								fa_text_processor_pass_on_token(state, _squo_start_wrapped_token);
+								_fa_text_processor_pass_on_token(state, _squo_start_wrapped_token);
 							} else {
-								fa_text_processor_pass_on_token(state, _squo_start_token);
+								_fa_text_processor_pass_on_token(state, _squo_start_token);
 							}
 						} else {
 							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
-								fa_text_processor_pass_on_token(state, _squo_end_wrapped_token);
+								_fa_text_processor_pass_on_token(state, _squo_end_wrapped_token);
 							} else {
-								fa_text_processor_pass_on_token(state, _squo_end_token);
+								_fa_text_processor_pass_on_token(state, _squo_end_token);
 							}
 						}
 						break;
 
 					case '"':
-						fa_text_processor_pass_on_token(state, current_token);
+						_fa_text_processor_pass_on_token(state, current_token);
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
 							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
-								fa_text_processor_pass_on_token(state, _dquo_start_wrapped_token);
+								_fa_text_processor_pass_on_token(state, _dquo_start_wrapped_token);
 							} else {
-								fa_text_processor_pass_on_token(state, _dquo_start_token);
+								_fa_text_processor_pass_on_token(state, _dquo_start_token);
 							}
 						} else {
 							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
-								fa_text_processor_pass_on_token(state, _dquo_end_wrapped_token);
+								_fa_text_processor_pass_on_token(state, _dquo_end_wrapped_token);
 							} else {
-								fa_text_processor_pass_on_token(state, _dquo_end_token);
+								_fa_text_processor_pass_on_token(state, _dquo_end_token);
 							}
 						}
 						break;
@@ -148,15 +148,11 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 				break;
 
 			case fa_text_processor_fsm_state_ampamp:
-				if (c == ';') {
-					if (state->config.wrap_amps && token.type != fa_token_type_text_no_html) {
-						fa_text_processor_pass_on_token(state, current_token);
-						current_token.slice.start = token.slice.start + 1;
-						current_token.slice.length = 0;
-						fa_text_processor_pass_on_token(state, _amp_wrapped_token);
-					} else {
-						current_token.slice.length += 6;
-					}
+				if (c == ';' && state->config.wrap_amps && token.type != fa_token_type_text_no_html) {
+					_fa_text_processor_pass_on_token(state, current_token);
+					current_token.slice.start = token.slice.start + 1;
+					current_token.slice.length = 0;
+					_fa_text_processor_pass_on_token(state, _amp_wrapped_token);
 				} else {
 					current_token.slice.length += 5;
 				}
@@ -174,10 +170,10 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 
 			case fa_text_processor_fsm_state_dotdot:
 				if (c == '.') {
-					fa_text_processor_pass_on_token(state, current_token);
+					_fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start+1;
 					current_token.slice.length = 0;
-					fa_text_processor_pass_on_token(state, _ellipsis_token);
+					_fa_text_processor_pass_on_token(state, _ellipsis_token);
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				} else {
 					current_token.slice.length += 3;
@@ -196,16 +192,16 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 
 			case fa_text_processor_fsm_state_dashdash:
 				if (c == '-') {
-					fa_text_processor_pass_on_token(state, current_token);
+					_fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start+1;
 					current_token.slice.length = 0;
-					fa_text_processor_pass_on_token(state, _mdash_token);
+					_fa_text_processor_pass_on_token(state, _mdash_token);
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				} else {
-					fa_text_processor_pass_on_token(state, current_token);
+					_fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start;
 					current_token.slice.length = 1;
-					fa_text_processor_pass_on_token(state, _mdash_token);
+					_fa_text_processor_pass_on_token(state, _mdash_token);
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
@@ -216,35 +212,35 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 
 	switch (state->text_processor_state.fsm_state) {
 		case fa_text_processor_fsm_state_start:
-			fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, current_token);
 			break;
 
 		case fa_text_processor_fsm_state_amp:
 		case fa_text_processor_fsm_state_dot:
 		case fa_text_processor_fsm_state_dash:
 			current_token.slice.length += 1;
-			fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, current_token);
 			break;
 
 		case fa_text_processor_fsm_state_dotdot:
 		case fa_text_processor_fsm_state_ampa:
 			current_token.slice.length += 2;
-			fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, current_token);
 			break;
 
 		case fa_text_processor_fsm_state_ampam:
 			current_token.slice.length += 3;
-			fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, current_token);
 			break;
 
 		case fa_text_processor_fsm_state_ampamp:
 			current_token.slice.length += 4;
-			fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, current_token);
 			break;
 
 		case fa_text_processor_fsm_state_dashdash:
-			fa_text_processor_pass_on_token(state, current_token);
-			fa_text_processor_pass_on_token(state, _mdash_token);
+			_fa_text_processor_pass_on_token(state, current_token);
+			_fa_text_processor_pass_on_token(state, _mdash_token);
 			break;
 	}
 	state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;

@@ -434,12 +434,6 @@ static void _fa_tokenizer_handle_tag_name(fa_state *state) {
 
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token) {
 	if (0 < token.slice.length) {
-		/*
-		   printf("--- passing on token: ");
-		   fa_token_print(token, stdout);
-		   puts("");
-		   */
-
 		fa_text_processor_handle_token(state, token);
 	}
 }
@@ -468,6 +462,8 @@ static void _fa_tokenizer_tag_finished(fa_state *state) {
 	// TODO also check title
 	if (state->tokenizer_state.is_in_excluded_element) {
 		state->tokenizer_state.current_token.type = fa_token_type_text_raw;
+	} else if (state->tokenizer_state.is_in_title) {
+		state->tokenizer_state.current_token.type = fa_token_type_text_no_html;
 	} else {
 		state->tokenizer_state.current_token.type = fa_token_type_text;
 	}
