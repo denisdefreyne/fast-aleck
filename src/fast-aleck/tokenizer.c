@@ -26,6 +26,7 @@ void fa_tokenizer_state_init(fa_tokenizer_state *state, char *input, size_t inpu
 }
 
 static void _fa_tokenizer_handle_tag_name(fa_state *state);
+static void _fa_tokenizer_raw_finished(fa_state *state);
 static void _fa_tokenizer_tag_finished(fa_state *state);
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token);
 
@@ -153,7 +154,7 @@ redo:
 				++state->tokenizer_state.current_token.slice.length;
 				switch (c) {
 					case '>':
-						state->tokenizer_state.fsm_state = fa_tokenizer_fsm_state_entry;
+						_fa_tokenizer_raw_finished(state);
 						break;
 
 					default:
@@ -258,7 +259,7 @@ redo:
 				switch (c)
 				{
 					case '>':
-						state->tokenizer_state.fsm_state = fa_tokenizer_fsm_state_entry;
+						_fa_tokenizer_raw_finished(state);
 						break;
 
 					default:
@@ -307,8 +308,8 @@ redo:
 	if (state->tokenizer_state.is_closing_tag) { \
 		state->tokenizer_state.is_in_##flag = false; \
 		state->tokenizer_state.is_in_excluded_element = \
-			state->tokenizer_state.is_in_code || state->tokenizer_state.is_in_kbd || state->tokenizer_state.is_in_pre  || state->tokenizer_state.is_in_script || \
-			state->tokenizer_state.is_in_samp || state->tokenizer_state.is_in_var || state->tokenizer_state.is_in_math || state->tokenizer_state.is_in_textarea; \
+		state->tokenizer_state.is_in_code || state->tokenizer_state.is_in_kbd || state->tokenizer_state.is_in_pre  || state->tokenizer_state.is_in_script || \
+		state->tokenizer_state.is_in_samp || state->tokenizer_state.is_in_var || state->tokenizer_state.is_in_math || state->tokenizer_state.is_in_textarea; \
 	} else { \
 		state->tokenizer_state.is_in_##flag = true; \
 		state->tokenizer_state.is_in_excluded_element = true; \
@@ -433,12 +434,24 @@ static void _fa_tokenizer_handle_tag_name(fa_state *state) {
 
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token) {
 	if (0 < token.slice.length) {
-//		printf("--- passing on token: ");
-//		fa_token_print(token, stdout);
-//		puts("");
+		/*
+		   printf("--- passing on token: ");
+		   fa_token_print(token, stdout);
+		   puts("");
+		   */
 
 		fa_text_processor_handle_token(state, token);
 	}
+}
+
+static void _fa_tokenizer_raw_finished(fa_state *state) {
+	state->tokenizer_state.fsm_state = fa_tokenizer_fsm_state_entry;
+
+	_fa_tokenizer_pass_on_token(state, state->tokenizer_state.current_token);
+
+	state->tokenizer_state.current_token.slice.start  = state->tokenizer_state.input.start+1;
+	state->tokenizer_state.current_token.slice.length = 0;
+	state->tokenizer_state.current_token.type         = fa_token_type_text;
 }
 
 static void _fa_tokenizer_tag_finished(fa_state *state) {
@@ -454,8 +467,8 @@ static void _fa_tokenizer_tag_finished(fa_state *state) {
 
 	// TODO also check title
 	if (state->tokenizer_state.is_in_excluded_element) {
-	   state->tokenizer_state.current_token.type = fa_token_type_text_raw;
+		state->tokenizer_state.current_token.type = fa_token_type_text_raw;
 	} else {
-	   state->tokenizer_state.current_token.type = fa_token_type_text;
+		state->tokenizer_state.current_token.type = fa_token_type_text;
 	}
 }
