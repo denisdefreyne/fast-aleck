@@ -207,15 +207,15 @@ int main(void) {
 
 	fast_aleck_test(&test_suite,
 		"foo </div",
-		"foo </div>");
+		"foo </div");
 
 	fast_aleck_test(&test_suite,
 		"foo <div class='meh",
-		"foo <div class='meh'>");
+		"foo <div class='meh");
 
 	fast_aleck_test(&test_suite,
 		"foo <div class=\"meh",
-		"foo <div class=\"meh\">");
+		"foo <div class=\"meh");
 
 	// WRAP AMPS TESTS
 
