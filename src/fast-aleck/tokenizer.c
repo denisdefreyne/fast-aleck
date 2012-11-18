@@ -433,9 +433,9 @@ static void _fa_tokenizer_handle_tag_name(fa_state *state) {
 
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token) {
 	if (0 < token.slice.length) {
-		printf("--- passing on token: ");
-		fa_token_print(token, stdout);
-		puts("");
+//		printf("--- passing on token: ");
+//		fa_token_print(token, stdout);
+//		puts("");
 
 		fa_text_processor_handle_token(state, token);
 	}

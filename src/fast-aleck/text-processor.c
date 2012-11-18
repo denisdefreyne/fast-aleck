@@ -23,8 +23,7 @@ const fa_token _dquo_end_token           = { .slice = { .start = "\xE2\x80\x9D",
 const fa_token _dquo_end_wrapped_token   = { .slice = { .start = "<span class=\"dquo\">\xE2\x80\x9D</span>", .length = 29 }, .type = fa_token_type_inline };
 const fa_token _amp_wrapped_token        = { .slice = { .start = "<span class=\"amp\">&amp;</span>",         .length = 30 }, .type = fa_token_type_inline };
 
-static inline bool _fa_should_open_quote(char in)
-{
+static inline bool _fa_should_open_quote(char in) {
 	return in == '\0' || in == '(' || isspace(in);
 }
 
@@ -121,79 +120,66 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 				state->text_processor_state.is_at_start_of_run = 0;
 				break;
 
-				/*
-				   case fa_text_processor_fsm_state_amp:
-				   if (c == 'a')
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampa;
-				   else
-				   {
-				   fast_aleck_buffer_unchecked_append_char(out_buf, '&');
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				   _fa_feed_handle_body_text_char(state, c, out_buf);
-				   }
-				   break;
+			case fa_text_processor_fsm_state_amp:
+				if (c == 'a')
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampa;
+				else {
+					current_token.slice.length += 1;
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
+				}
+				break;
 
-				   case fa_text_processor_fsm_state_ampa:
-				   if (c == 'm')
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampam;
-				   else
-				   {
-				   fast_aleck_buffer_unchecked_append_string(out_buf, "&a", 2);
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				   _fa_feed_handle_body_text_char(state, c, out_buf);
-				   }
-				   break;
+			case fa_text_processor_fsm_state_ampa:
+				if (c == 'm')
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampam;
+				else {
+					current_token.slice.length += 2;
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
+				}
+				break;
 
-				   case fa_text_processor_fsm_state_ampam:
-				   if (c == 'p')
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampamp;
-				   else
-				   {
-				   fast_aleck_buffer_unchecked_append_string(out_buf, "&am", 3);
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				   _fa_feed_handle_body_text_char(state, c, out_buf);
-				   }
-				   break;
+			case fa_text_processor_fsm_state_ampam:
+				if (c == 'p')
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_ampamp;
+				else {
+					current_token.slice.length += 3;
+					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
+				}
+				break;
 
-				   case fa_text_processor_fsm_state_ampamp:
-				   if (c == ';')
-				   {
-				   if (state->text_processor_state.config.wrap_amps && !state->text_processor_state.is_in_title)
-				   _fa_append_wrapped_amp(out_buf, proc);
-				   else
-				   fast_aleck_buffer_unchecked_append_string(out_buf, "&amp;", 5);
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				   }
-				   else
-				   {
-				   fast_aleck_buffer_unchecked_append_string(out_buf, "&amp", 4);
-				   state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				   _fa_feed_handle_body_text_char(state, c, out_buf);
-				   }
-				   break;
-				   */
+			case fa_text_processor_fsm_state_ampamp:
+				if (c == ';') {
+					if(state->text_processor_state.config.wrap_amps /* ... and not in title */) {
+						fa_text_processor_pass_on_token(state, current_token);
+						current_token.slice.start = token.slice.start+1;
+						current_token.slice.length = 0;
+						fa_text_processor_pass_on_token(state, _amp_wrapped_token);
+					} else {
+						current_token.slice.length += 5;
+					}
+				} else {
+					current_token.slice.length += 4;
+				}
+				state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
+				break;
 
 			case fa_text_processor_fsm_state_dot:
 				if (c == '.')
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_dotdot;
-				else
-				{
+				else {
 					current_token.slice.length += 2;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
 
 			case fa_text_processor_fsm_state_dotdot:
-				if (c == '.')
-				{
+				if (c == '.') {
 					fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start+1;
 					current_token.slice.length = 0;
 					fa_text_processor_pass_on_token(state, _ellipsis_token);
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				}
-				else
-				{
+				} else {
 					current_token.slice.length += 3;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
@@ -202,24 +188,20 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 			case fa_text_processor_fsm_state_dash:
 				if (c == '-')
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_dashdash;
-				else
-				{
+				else {
 					current_token.slice.length += 2;
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
 				}
 				break;
 
 			case fa_text_processor_fsm_state_dashdash:
-				if (c == '-')
-				{
+				if (c == '-') {
 					fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start+1;
 					current_token.slice.length = 0;
 					fa_text_processor_pass_on_token(state, _mdash_token);
 					state->text_processor_state.fsm_state = fa_text_processor_fsm_state_start;
-				}
-				else
-				{
+				} else {
 					fa_text_processor_pass_on_token(state, current_token);
 					current_token.slice.start  = token.slice.start;
 					current_token.slice.length = 1;
