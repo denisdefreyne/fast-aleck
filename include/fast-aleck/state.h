@@ -32,10 +32,10 @@ enum _fa_tokenizer_fsm_state {
 typedef enum _fa_tokenizer_fsm_state fa_tokenizer_fsm_state;
 
 struct _fa_tokenizer_state {
-	//fa_slice               input;
-	//fa_token               current_token;
+	fa_slice               input;
+	fa_token               current_token;
 	fa_tokenizer_fsm_state fsm_state;
-	//fa_slice               tag_name;
+	fa_slice               tag_name;
 	bool                   is_closing_tag;
 	bool                   is_in_excluded_element;
 	bool                   is_in_code;
