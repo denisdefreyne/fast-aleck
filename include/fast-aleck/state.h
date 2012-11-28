@@ -67,7 +67,6 @@ enum _fa_text_processor_fsm_state {
 typedef enum _fa_text_processor_fsm_state fa_text_processor_fsm_state;
 
 struct _fa_text_processor_state {
-	fa_token_buffer             *token_buffer; // TODO replace this with CAPS (temporary)
 	fa_text_processor_fsm_state fsm_state;
 	bool                        is_at_start_of_run;
 	char                        last_char;
