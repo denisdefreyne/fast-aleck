@@ -6,7 +6,7 @@ include_directories(
 	include
 )
 
-add_definitions(-std=gnu99 -Wall -Wextra -Wno-missing-braces -Wno-unused-function -Wno-unused-parameter)
+add_definitions(-std=gnu99 -Wall -Wextra -Wsequence-point -Wno-missing-braces -Wno-unused-function -Wno-unused-parameter)
 
 set(
 	SOURCES_SHARED

@@ -12,7 +12,15 @@
 
 static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, char *a_expected_output, ...);
 
-#define TOK(t, s) (_t.type = fa_token_type_ ## t, _t.slice.start = s, _t.slice.length = strlen(s), _t)
+static inline fa_token _tok(fa_token_type type, char *s) {
+	fa_token tok;
+	tok.type = type;
+	tok.slice.start = s;
+	tok.slice.length = strlen(s);
+	return tok;
+}
+
+#define TOK(t, s) _tok(fa_token_type_ ## t, s)
 
 int main(void) {
 	struct fa_test_suite test_suite;
@@ -23,7 +31,6 @@ int main(void) {
 	test_suite.wrap_caps   = 0;
 	test_suite.wrap_quotes = 0;
 	test_suite.widont      = 0;
-	fa_token _t;
 
 	fast_aleck_test(&test_suite,
 		"I am a simple sentence.",
