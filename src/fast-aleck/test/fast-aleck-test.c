@@ -582,27 +582,27 @@ int main(void) {
 	fast_aleck_test(&test_suite,
 		"Hello, this is DENIS speaking!",
 		"Hello, this is <span class=\"caps\">DENIS</span> speaking!",
-		fa_null_token);
+		TOK(text, "Hello, this is DENIS speaking!"), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"DENIS's pants.",
 		"<span class=\"caps\">DENIS</span>’s pants.",
-		fa_null_token);
+		TOK(text, "DENIS's pants."), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"I have 13 EC2 instances but no static AMIs.",
 		"I have 13 <span class=\"caps\">EC2</span> instances but no static <span class=\"caps\">AMI</span>s.",
-		fa_null_token);
+		TOK(text, "I have 13 EC2 instances but no static AMIs."), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"<title>Hello, this is DENIS speaking!</title>",
 		"<title>Hello, this is DENIS speaking!</title>",
-		fa_null_token);
+		TOK(inline, "<title>"), TOK(text_no_html, "Hello, this is DENIS speaking!"), TOK(inline, "</title>"), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"<p>MongoDB is better than PostgreSQL</p>",
 		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>",
-		fa_null_token);
+		TOK(block, "<p>"), TOK(text, "MongoDB is better than PostgreSQL"), TOK(block, "</p>"), fa_null_token);
 
 	// COMBINATION TESTS
 
@@ -613,14 +613,14 @@ int main(void) {
 	fast_aleck_test(&test_suite,
 		"<p>One Two <b>THR</b>EE!</p>",
 		"<p>One Two <b><span class=\"caps\">THR</span></b><span class=\"caps\">EE</span>!</p>",
-		fa_null_token);
+		TOK(block, "<p>"), TOK(text, "One Two "), TOK(inline, "<b>"), TOK(text, "THR"), TOK(inline, "</b>"), TOK(text, "EE!"), TOK(block, "</p>"), fa_null_token);
 
 	test_suite.wrap_caps = 0;
 
 	fast_aleck_test(&test_suite,
 		"Do NOT wrap caps if I don't ask to!",
 		"Do NOT wrap caps if I don’t ask to!",
-		fa_null_token);
+		TOK(text, "Do NOT wrap caps if I don't ask to!"), fa_null_token);
 
 	fprintf(stdout, "1..%i\n", test_suite.count);
 
@@ -747,6 +747,7 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 	for (size_t i = 0; i < actual_count; ++i) {
 		fa_token expected_token = fa_token_buffer_at(&expected_token_buffer, i);
 		fa_token actual_token   = fa_token_buffer_at(&actual_token_buffer, i);
+		// FIXME assert token types equal
 		if (expected_token.slice.length != actual_token.slice.length || 0 != strncmp(expected_token.slice.start, actual_token.slice.start, expected_token.slice.length)) {
 			++a_test_suite->fails;
 			fprintf(stdout, "not ok %i ", a_test_suite->count+1);

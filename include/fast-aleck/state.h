@@ -77,6 +77,9 @@ typedef struct _fa_text_processor_state fa_text_processor_state;
 // Caps processor state
 
 struct _fa_caps_processor_state {
+	fa_token normal_token;
+	fa_token caps_token;
+	bool     letter_found;
 };
 typedef struct _fa_caps_processor_state fa_caps_processor_state;
 

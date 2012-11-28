@@ -56,7 +56,7 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 	fa_token current_token;
 	current_token.slice.start  = token.slice.start;
 	current_token.slice.length = 0;
-	current_token.type         = fa_token_type_text;
+	current_token.type         = token.type;
 
 	for (; token.slice.length > 0; ++token.slice.start, --token.slice.length) {
 		char c = *token.slice.start;
