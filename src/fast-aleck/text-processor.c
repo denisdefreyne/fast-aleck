@@ -78,13 +78,14 @@ redo:
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
-							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes && token.type != fa_token_type_text_no_html) {
 								_fa_text_processor_pass_on_token(state, _squo_start_wrapped_token);
 							} else {
 								_fa_text_processor_pass_on_token(state, _squo_start_token);
 							}
 						} else {
-							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
+							// FIXME close quote cannot happen at the start of a run, so it should never be wrapped
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes && token.type != fa_token_type_text_no_html) {
 								_fa_text_processor_pass_on_token(state, _squo_end_wrapped_token);
 							} else {
 								_fa_text_processor_pass_on_token(state, _squo_end_token);
@@ -97,13 +98,14 @@ redo:
 						current_token.slice.start  = token.slice.start+1;
 						current_token.slice.length = 0;
 						if (_fa_should_open_quote(state->text_processor_state.last_char)) {
-							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes && token.type != fa_token_type_text_no_html) {
 								_fa_text_processor_pass_on_token(state, _dquo_start_wrapped_token);
 							} else {
 								_fa_text_processor_pass_on_token(state, _dquo_start_token);
 							}
 						} else {
-							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes) {
+							// FIXME close quote cannot happen at the start of a run, so it should never be wrapped
+							if (state->text_processor_state.is_at_start_of_run && state->config.wrap_quotes && token.type != fa_token_type_text_no_html) {
 								_fa_text_processor_pass_on_token(state, _dquo_end_wrapped_token);
 							} else {
 								_fa_text_processor_pass_on_token(state, _dquo_end_token);
