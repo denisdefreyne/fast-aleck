@@ -275,6 +275,21 @@ int main(void) {
 		"foo <div class=\"meh",
 		TOK(text, "foo "), TOK(block, "<div class=\"meh"), fa_null_token);
 
+	fast_aleck_test(&test_suite,
+		"&' / &a' / &am' / &amp' / &amp;'",
+		"&’ / &a’ / &am’ / &amp’ / &amp;’",
+		TOK(text, "&' / &a' / &am' / &amp' / &amp;'"), fa_null_token);
+
+	fast_aleck_test(&test_suite,
+		".' / ..'",
+		".’ / ..’",
+		TOK(text, ".' / ..'"), fa_null_token);
+
+	fast_aleck_test(&test_suite,
+		"-' / --' / ---'",
+		"-’ / —’ / —’",
+		TOK(text, "-' / --' / ---'"), fa_null_token);
+
 	// WRAP AMPS TESTS
 
 	test_suite.wrap_amps = 1;
@@ -353,37 +368,37 @@ int main(void) {
 	fast_aleck_test(&test_suite,
 		"There's a hole in the sky.",
 		"There’s a hole in the sky.",
-		fa_null_token);
+		TOK(text, "There's a hole in the sky."), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"'There's a hole in the sky', he said. 'Don't be silly', she said.",
 		"<span class=\"quo\">‘</span>There’s a hole in the sky’, he said. ‘Don’t be silly’, she said.",
-		fa_null_token);
+		TOK(text, "'There's a hole in the sky', he said. 'Don't be silly', she said."), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"\"There's a hole in the sky\", he said. \"Don't be silly\", she said.",
 		"<span class=\"dquo\">“</span>There’s a hole in the sky”, he said. “Don’t be silly”, she said.",
-		fa_null_token);
+		TOK(text, "\"There's a hole in the sky\", he said. \"Don't be silly\", she said."), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"\"Here.\"<p>\"Here.\" \"Not here.\"<p>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<p><span class=\"dquo\">“</span>Here.” “Not here.”<p><span class=\"dquo\">“</span>Here.”",
-		fa_null_token);
+		TOK(text, "\"Here.\""), TOK(block, "<p>"), TOK(text, "\"Here.\" \"Not here.\""), TOK(block, "<p>"), TOK(text, "\"Here.\""), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"\"Here.\"<li>\"Here.\" \"Not here.\"<li>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<li><span class=\"dquo\">“</span>Here.” “Not here.”<li><span class=\"dquo\">“</span>Here.”",
-		fa_null_token);
+		TOK(text, "\"Here.\""), TOK(block, "<li>"), TOK(text, "\"Here.\" \"Not here.\""), TOK(block, "<li>"), TOK(text, "\"Here.\""), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"\"Here.\"<div>\"Here.\" \"Not here.\"<div>\"Here.\"",
 		"<span class=\"dquo\">“</span>Here.”<div><span class=\"dquo\">“</span>Here.” “Not here.”<div><span class=\"dquo\">“</span>Here.”",
-		fa_null_token);
+		TOK(text, "\"Here.\""), TOK(block, "<div>"), TOK(text, "\"Here.\" \"Not here.\""), TOK(block, "<div>"), TOK(text, "\"Here.\""), fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"<title>'There's a hole in the sky'</title>",
 		"<title>‘There’s a hole in the sky’</title>",
-		fa_null_token);
+		TOK(inline, "<title>"), TOK(text, "'There's a hole in the sky'"), TOK(inline, "</title>"), fa_null_token);
 
 	// TODO h1, h2, ..., h6
 
@@ -644,11 +659,34 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 		_fa_puts_escaped(a_expected_output);
 		fprintf(stdout, "  Actual:   ");
 		_fa_puts_escaped(actual_output);
+		fprintf(stdout, "            ");
+		size_t min_len = strlen(a_input);
+		if (out_len < min_len)
+			min_len = out_len;
+		int special_char_len = 0;
+		for (size_t i = 0; i < min_len; ++i) {
+			bool is_special_char = a_expected_output[i] < 0;
+			bool should_print = !is_special_char || special_char_len == 1;
+			if (is_special_char) {
+				special_char_len++;
+			} else {
+				special_char_len = 0;
+			}
+			if (should_print) {
+				if (a_expected_output[i] != actual_output[i]) {
+					fputs("^-----", stdout);
+					break;
+				} else {
+					fputc(' ', stdout);
+				}
+			}
+		}
+		puts("");
 		goto bail;
 	}
 
 	// check length
-	if(strlen(actual_output) != out_len) {
+	if (strlen(actual_output) != out_len) {
 		++a_test_suite->fails;
 		fprintf(stdout, "not ok %i ", a_test_suite->count+1);
 		_fa_puts_escaped(a_input);
