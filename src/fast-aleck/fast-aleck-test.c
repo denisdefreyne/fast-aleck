@@ -394,6 +394,10 @@ int main(void)
 		"<p>MongoDB is better than PostgreSQL</p>",
 		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>");
 		
+	fast_aleck_test(&test_case,
+		"<p>HTML entities! &copy; &COPY; &#x21A9;</p>",
+		"<p><span class=\"caps\">HTML</span> entities! &copy; &COPY; &#x21A9;</p>");
+
 	test_case.wrap_caps = 0;
 
 	fast_aleck_test(&test_case,
