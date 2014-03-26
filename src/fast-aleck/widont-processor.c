@@ -130,7 +130,6 @@ void fa_widont_processor_handle_token(fa_state *state, fa_token token) {
 		bool cur_blank = isspace(*s);
 		if (prev_blank != cur_blank || s == max_s) {
 			fa_token t = { .slice = { .start = prev_s, .length = s - prev_s }, .type = fa_token_type_inline };
-			// fa_token_print(t, stdout);
 			fa_widont_processor_converter_handle_token(state, t, prev_blank);
 			prev_s = s;
 			prev_blank = cur_blank;

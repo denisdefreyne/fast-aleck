@@ -611,6 +611,11 @@ int main(void) {
 		"<p>Mongo<span class=\"caps\">DB</span> is better than Postgre<span class=\"caps\">SQL</span></p>",
 		TOK(block, "<p>"), TOK(text, "MongoDB is better than PostgreSQL"), TOK(block, "</p>"), fa_null_token);
 
+	fast_aleck_test(&test_suite,
+		"<p>HTML entities! &copy; &COPY; &#x21A9;</p>",
+		"<p><span class=\"caps\">HTML</span> entities! &copy; &COPY; &#x21A9;</p>",
+		TOK(block, "<p>"), TOK(text, "MongoDB is better than PostgreSQL"), TOK(block, "</p>"), fa_null_token);
+
 	// COMBINATION TESTS
 
 	test_suite.wrap_caps   = 1;
