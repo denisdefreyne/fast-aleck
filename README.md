@@ -7,19 +7,6 @@ Status
 
 Fast Aleck is **alpha quality**. Expect things to break. If it breaks, please do let me know! Crash reports and examples of incorrect output are *greatly* appreciated!
 
-Required re-engineering
------------------------
-
-At this moment, there are two branches, `master` and `cleanup`. Since the code in `master` was becoming hard to maintain, work on a cleaner codebase was started in the `cleanup` branch. This branch (as well as `master`) suffers from conceptual problems which will need to tackled in order for Fast Aleck to become usable. The follow problems need to be tackled:
-
-* **Erroneous reordering** - Since functions can both write to the final output buffer as well as pass on data to the next function to process, and because functions can buffer data before writing it to the output stream, it is possible to arrive at situations in which output is written in an incorrect order.
-
-* **Slowness due to char processing** - Fast Aleck currently feeds char by char, which is inefficient since large amounts of texts that do not require processing are not handled as a single blob but rather as a collection of chars. Making use of blobs will speed things up, but may cause cache misses if the blobs are too large.
-
-* **Composability** - Individual components of the Fast Aleck conversion workflow should be easily composable. The `cleanup` branch already divides the old code in components, but these are still fairly hardcoded. These components are `TAGS`, `BODY`, `CAPS` and `WIDONT`. It should be possible to construct a workflow which consists of only the required components (e.g. only `TAGS` and `BODY`).
-
-* **Size of the code base** - There is currently only a single file that contains all the processing code. If Fast Aleck is split into multiple independent components, these components could each live in their own source file.
-
 How fast is it really?
 ----------------------
 
