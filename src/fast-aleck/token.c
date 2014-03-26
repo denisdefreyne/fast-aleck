@@ -27,6 +27,10 @@ void fa_token_print(fa_token token, FILE *file) {
 			type = "text (no html)";
 			break;
 
+		case fa_token_type_end:
+			type = "end";
+			break;
+
 		default:
 			type = "???";
 			break;

@@ -13,7 +13,8 @@ enum _fa_token_type {
 	fa_token_type_inline,
 	fa_token_type_text,
 	fa_token_type_text_raw,
-	fa_token_type_text_no_html
+	fa_token_type_text_no_html,
+	fa_token_type_end,
 };
 typedef enum _fa_token_type fa_token_type;
 

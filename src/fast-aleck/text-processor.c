@@ -38,6 +38,7 @@ void fa_text_processor_handle_token(fa_state *state, fa_token token) {
 	switch (token.type) {
 		case fa_token_type_text_raw:
 		case fa_token_type_inline:
+		case fa_token_type_end:
 			_fa_text_processor_pass_on_token(state, token);
 			return;
 

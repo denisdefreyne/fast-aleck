@@ -4,6 +4,8 @@
 
 #include <fast-aleck/text-processor.h>
 
+static const fa_token _end_token = { .type = fa_token_type_end };
+
 void fa_tokenizer_state_init(fa_tokenizer_state *state, char *input, size_t input_length) {
 	state->input.start                = input;
 	state->input.length               = input_length;
@@ -303,6 +305,7 @@ redo:
 	}
 
 	_fa_tokenizer_pass_on_token(state, state->tokenizer_state.current_token);
+	_fa_tokenizer_pass_on_token(state, _end_token);
 }
 
 #define _FAST_ALECK_SET_FLAGS_FOR_EXCLUDED_ELEMENT(flag) \
@@ -434,7 +437,7 @@ static void _fa_tokenizer_handle_tag_name(fa_state *state) {
 }
 
 static void _fa_tokenizer_pass_on_token(fa_state *state, fa_token token) {
-	if (0 < token.slice.length) {
+	if (0 < token.slice.length || token.type == fa_token_type_end) {
 		if (state->tokenizer_state._token_buffer) {
 			fa_token_buffer_append(state->tokenizer_state._token_buffer, token);
 		} else {

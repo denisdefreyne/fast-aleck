@@ -38,6 +38,7 @@ void fa_caps_processor_handle_token(fa_state *state, fa_token token) {
 		case fa_token_type_block:
 		case fa_token_type_text_no_html:
 		case fa_token_type_text_raw:
+		case fa_token_type_end:
 			_fa_caps_processor_pass_on_token(state, token);
 			return;
 

@@ -727,7 +727,8 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 	// check tokenization
 	size_t expected_count = fa_token_buffer_count(&expected_token_buffer);
 	size_t actual_count   = fa_token_buffer_count(&actual_token_buffer);
-	if (expected_count != actual_count) {
+	bool has_no_end_token = actual_count - 1 != expected_count || (actual_count > 0 && fa_token_buffer_at(&actual_token_buffer, actual_count - 1).type != fa_token_type_end);
+	if (expected_count != actual_count && has_no_end_token) {
 		++a_test_suite->fails;
 		fprintf(stdout, "not ok %i ", a_test_suite->count+1);
 		_fa_puts_escaped(a_input);
