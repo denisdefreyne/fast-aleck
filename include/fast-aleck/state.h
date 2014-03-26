@@ -85,6 +85,11 @@ typedef struct _fa_caps_processor_state fa_caps_processor_state;
 // Widont state
 
 struct _fa_widont_processor_state {
+	fa_token_buffer words1;
+	fa_token_buffer spaces1;
+	fa_token_buffer words2;
+	fa_token_buffer spaces2;
+	bool have_words;
 };
 typedef struct _fa_widont_processor_state fa_widont_processor_state;
 

@@ -48,3 +48,8 @@ void fa_token_buffer_write(fa_token_buffer *buffer, char *string) {
 	}
 	*string = '\0';
 }
+
+void fa_token_buffer_clear(fa_token_buffer *buffer) {
+	buffer->size = 0;
+	buffer->_cached_length = 0;
+}

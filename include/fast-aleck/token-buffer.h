@@ -21,5 +21,6 @@ size_t fa_token_buffer_count(fa_token_buffer *buffer);
 fa_token fa_token_buffer_at(fa_token_buffer *buffer, size_t i);
 size_t fa_token_buffer_get_length(fa_token_buffer *buffer);
 void fa_token_buffer_write(fa_token_buffer *buffer, char *string);
+void fa_token_buffer_clear(fa_token_buffer *buffer);
 
 #endif

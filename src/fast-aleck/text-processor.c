@@ -8,18 +8,17 @@
 #include <fast-aleck/text-processor.h>
 #include <fast-aleck/caps-processor.h>
 
-const fa_token _ellipsis_token           = { .slice = { .start = "\xE2\x80\xA6",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _mdash_token              = { .slice = { .start = "\xE2\x80\x94",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _nbsp_token               = { .slice = { .start = "&nbsp;",                                   .length = 6  }, .type = fa_token_type_text   };
-const fa_token _squo_start_token         = { .slice = { .start = "\xE2\x80\x98",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _squo_start_wrapped_token = { .slice = { .start = "<span class=\"quo\">\xE2\x80\x98</span>",  .length = 28 }, .type = fa_token_type_inline };
-const fa_token _squo_end_token           = { .slice = { .start = "\xE2\x80\x99",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _squo_end_wrapped_token   = { .slice = { .start = "<span class=\"quo\">\xE2\x80\x99</span>",  .length = 28 }, .type = fa_token_type_inline };
-const fa_token _dquo_start_token         = { .slice = { .start = "\xE2\x80\x9C",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _dquo_start_wrapped_token = { .slice = { .start = "<span class=\"dquo\">\xE2\x80\x9C</span>", .length = 29 }, .type = fa_token_type_inline };
-const fa_token _dquo_end_token           = { .slice = { .start = "\xE2\x80\x9D",                             .length = 3  }, .type = fa_token_type_text   };
-const fa_token _dquo_end_wrapped_token   = { .slice = { .start = "<span class=\"dquo\">\xE2\x80\x9D</span>", .length = 29 }, .type = fa_token_type_inline };
-const fa_token _amp_wrapped_token        = { .slice = { .start = "<span class=\"amp\">&amp;</span>",         .length = 30 }, .type = fa_token_type_inline };
+static const fa_token _ellipsis_token           = { .slice = { .start = "\xE2\x80\xA6",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _mdash_token              = { .slice = { .start = "\xE2\x80\x94",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _squo_start_token         = { .slice = { .start = "\xE2\x80\x98",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _squo_start_wrapped_token = { .slice = { .start = "<span class=\"quo\">\xE2\x80\x98</span>",  .length = 28 }, .type = fa_token_type_inline };
+static const fa_token _squo_end_token           = { .slice = { .start = "\xE2\x80\x99",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _squo_end_wrapped_token   = { .slice = { .start = "<span class=\"quo\">\xE2\x80\x99</span>",  .length = 28 }, .type = fa_token_type_inline };
+static const fa_token _dquo_start_token         = { .slice = { .start = "\xE2\x80\x9C",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _dquo_start_wrapped_token = { .slice = { .start = "<span class=\"dquo\">\xE2\x80\x9C</span>", .length = 29 }, .type = fa_token_type_inline };
+static const fa_token _dquo_end_token           = { .slice = { .start = "\xE2\x80\x9D",                             .length = 3  }, .type = fa_token_type_text   };
+static const fa_token _dquo_end_wrapped_token   = { .slice = { .start = "<span class=\"dquo\">\xE2\x80\x9D</span>", .length = 29 }, .type = fa_token_type_inline };
+static const fa_token _amp_wrapped_token        = { .slice = { .start = "<span class=\"amp\">&amp;</span>",         .length = 30 }, .type = fa_token_type_inline };
 
 static inline bool _fa_should_open_quote(char in) {
 	return in == '\0' || in == '(' || isspace(in);
