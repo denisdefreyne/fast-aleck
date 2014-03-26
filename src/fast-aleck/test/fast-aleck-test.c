@@ -737,23 +737,27 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 		++a_test_suite->fails;
 		fprintf(stdout, "not ok %i ", a_test_suite->count+1);
 		_fa_puts_escaped(a_input);
-		fprintf(stdout, "  Expected number of tokens: %lu\n", (unsigned long) expected_count);
-		fprintf(stdout, "  Expected tokens:\n");
-		for (size_t i = 0; i < expected_count; ++i) {
-			fa_token expected_token = fa_token_buffer_at(&expected_token_buffer, i);
-			fprintf(stdout, "    ");
-			fa_token_print(expected_token, stdout);
-			fprintf(stdout, " ");
-			puts("");
-		}
-		fprintf(stdout, "  Actual number of tokens:   %lu\n", (unsigned long) actual_count);
-		fprintf(stdout, "  Actual tokens:  \n");
-		for (size_t i = 0; i < actual_count; ++i) {
-			fa_token actual_token = fa_token_buffer_at(&actual_token_buffer, i);
-			fprintf(stdout, "    ");
-			fa_token_print(actual_token, stdout);
-			fprintf(stdout, " ");
-			puts("");
+		if (0 == expected_count) {
+			fprintf(stdout, "  Result OK, but no expected tokenization given\n");
+		} else {
+			fprintf(stdout, "  Expected number of tokens: %lu\n", (unsigned long) expected_count);
+			fprintf(stdout, "  Expected tokens:\n");
+			for (size_t i = 0; i < expected_count; ++i) {
+				fa_token expected_token = fa_token_buffer_at(&expected_token_buffer, i);
+				fprintf(stdout, "    ");
+				fa_token_print(expected_token, stdout);
+				fprintf(stdout, " ");
+				puts("");
+			}
+			fprintf(stdout, "  Actual number of tokens:   %lu\n", (unsigned long) actual_count);
+			fprintf(stdout, "  Actual tokens:  \n");
+			for (size_t i = 0; i < actual_count; ++i) {
+				fa_token actual_token = fa_token_buffer_at(&actual_token_buffer, i);
+				fprintf(stdout, "    ");
+				fa_token_print(actual_token, stdout);
+				fprintf(stdout, " ");
+				puts("");
+			}
 		}
 		goto bail;
 	}
