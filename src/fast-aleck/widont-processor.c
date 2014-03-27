@@ -84,8 +84,11 @@ static void _fa_widont_processor_flush(fa_state *state) {
 		fa_widont_processor_pass_on_token(state, fa_token_buffer_at(&state->widont_processor_state.words2, i));
 	}
 
-	// spaces2 - do we need this?
-	// probably not
+	// spaces2
+	len = state->widont_processor_state.spaces2.size;
+	for (size_t i = 0; i < len; ++i) {
+		fa_widont_processor_pass_on_token(state, fa_token_buffer_at(&state->widont_processor_state.spaces2, i));
+	}
 
 	// reset
 	fa_token_buffer_clear(&state->widont_processor_state.words1);
