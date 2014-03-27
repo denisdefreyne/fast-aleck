@@ -38,7 +38,8 @@ void fa_token_print(fa_token token, FILE *file) {
 	fprintf(file, "type = %s, ", type);
 
 	fputs("data = \"", file);
-	for (char *s = token.slice.start; token.slice.length > 0; --token.slice.length, ++s) {
+	char *s_end = token.slice.start + token.slice.length;
+	for (char *s = token.slice.start; s < s_end; ++s) {
 		fputc(*s, file);
 	}
 
