@@ -59,7 +59,10 @@ static void fa_widont_processor_converter_handle_token(fa_state *state, fa_token
 }
 
 static void _fa_widont_processor_flush(fa_state *state) {
-	// return;
+	if (!state->config.widont) {
+		return;
+	}
+
 	// if spaces1 is not empty, replace it with nbsp
 
 	size_t len;
@@ -103,6 +106,11 @@ void fa_widont_processor_state_init(fa_widont_processor_state *state) {
 }
 
 void fa_widont_processor_handle_token(fa_state *state, fa_token token) {
+	if (!state->config.widont) {
+		fa_widont_processor_pass_on_token(state, token);
+		return;
+	}
+
 	switch (token.type) {
 		case fa_token_type_inline:
 		case fa_token_type_text_no_html:
