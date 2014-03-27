@@ -116,8 +116,11 @@ void fa_widont_processor_handle_token(fa_state *state, fa_token token) {
 
 	switch (token.type) {
 		case fa_token_type_inline:
-		case fa_token_type_text_no_html:
 		case fa_token_type_text_raw:
+			fa_widont_processor_converter_handle_token(state, token, false);
+			return;
+
+		case fa_token_type_text_no_html:
 		case fa_token_type_text:
 			break;
 
