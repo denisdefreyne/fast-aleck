@@ -549,6 +549,26 @@ int main(void) {
 		fa_null_token);
 
 	fast_aleck_test(&test_suite,
+		"<p>one<br>two<br>three</p>",
+		"<p>one<br>two<br>three</p>",
+		fa_null_token);
+
+	fast_aleck_test(&test_suite,
+		"<p>one\ntwo\nthree</p>",
+		"<p>one\ntwo&nbsp;three</p>",
+		fa_null_token);
+
+	fast_aleck_test(&test_suite,
+		"<pre>pre blocks are sacred</pre>",
+		"<pre>pre blocks are sacred</pre>",
+		fa_null_token);
+
+	fast_aleck_test(&test_suite,
+		"<a href='blah' title='blah' more='stuff'></pre>",
+		"<a href='blah' title='blah' more='stuff'></pre>",
+		fa_null_token);
+
+	fast_aleck_test(&test_suite,
 		"<p>foo bar\n<br>\nbaz</p>",
 		"<p>foo&nbsp;bar\n<br>\nbaz</p>",
 		fa_null_token);
@@ -634,7 +654,7 @@ int main(void) {
 
 	fast_aleck_test(&test_suite,
 		"Do NOT wrap caps if I don't ask to!",
-		"Do NOT wrap caps if I don’t ask to!",
+		"Do NOT wrap caps if I don’t ask&nbsp;to!",
 		TOK(text, "Do NOT wrap caps if I don't ask to!"), fa_null_token);
 
 	fprintf(stdout, "1..%i\n", test_suite.count);
