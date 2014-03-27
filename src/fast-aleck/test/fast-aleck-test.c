@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include <fast-aleck/fast-aleck.h>
 #include <fast-aleck/state.h>
@@ -9,6 +10,8 @@
 #include <fast-aleck/token.h>
 #include <fast-aleck/token-buffer.h>
 #include <fast-aleck/test/fast-aleck-test.h>
+
+#define FAST_ALECK_TEST_CONFIG_CHECK_TOKENIZATION (false)
 
 static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, char *a_expected_output, ...);
 
@@ -707,6 +710,7 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 		goto bail;
 	}
 
+#if FAST_ALECK_TEST_CONFIG_CHECK_TOKENIZATION
 	// tokenize
 	fa_token_buffer actual_token_buffer;
 	fa_token_buffer_init(&actual_token_buffer, 10);
@@ -778,6 +782,7 @@ static void fast_aleck_test(struct fa_test_suite *a_test_suite, char *a_input, c
 			goto bail;
 		}
 	}
+#endif
 
 	// ok
 	++a_test_suite->passes;
