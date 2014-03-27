@@ -657,7 +657,7 @@ int main(void) {
 	test_suite.wrap_quotes = 0;
 	fast_aleck_test(&test_suite,
 		"<p>One Two <b>THR</b>EE!</p>",
-		"<p>One Two <b><span class=\"caps\">THR</span></b><span class=\"caps\">EE</span>!</p>",
+		"<p>One Two&nbsp;<b><span class=\"caps\">THR</span></b><span class=\"caps\">EE</span>!</p>",
 		TOK(block, "<p>"), TOK(text, "One Two "), TOK(inline, "<b>"), TOK(text, "THR"), TOK(inline, "</b>"), TOK(text, "EE!"), TOK(block, "</p>"), fa_null_token);
 
 	test_suite.wrap_caps = 0;
