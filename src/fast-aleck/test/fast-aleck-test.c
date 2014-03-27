@@ -539,6 +539,11 @@ int main(void) {
 		fa_null_token);
 
 	fast_aleck_test(&test_suite,
+		"<h1><a href='blablabla'>why won't this widon't</a></h1>",
+		"<h1><a href='blablabla'>why won’t this&nbsp;widon’t</a></h1>",
+		fa_null_token);
+
+	fast_aleck_test(&test_suite,
 		"<p>foo bar<br>baz qux</p>",
 		"<p>foo&nbsp;bar<br>baz&nbsp;qux</p>",
 		fa_null_token);
