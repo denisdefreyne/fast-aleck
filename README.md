@@ -34,11 +34,13 @@ Features
 * Optionally replaces last significant whitespace in a block with a non-breaking space (Widon’t)
 * Optionally wraps sequences of capitals in `<span class="caps">` so you can use small caps.
 
-Example:
+Example input:
 
 	This... CANNOT be true--it's impossible! "I had five EC2 instances!"
 
-	This… <span class="caps">CANNOT</span> be true—it’s impossible! “I had five <span class="caps">EC2</span> instances!”
+Example output:
+
+	This… <span class="caps">CANNOT</span> be true—it’s impossible! “I had five <span class="caps">EC2</span>&nbsp;instances!”
 
 Installation
 ------------
