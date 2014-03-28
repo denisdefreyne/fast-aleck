@@ -40,8 +40,8 @@ Example input:
 
 Example output:
 
-	This… <span class="caps">CANNOT</span> be true—it’s impossible! “I had five
-	<span class="caps">EC2</span>&nbsp;instances!”
+	This… <span class="caps">CANNOT</span> be true&mdash;it’s impossible! “I had
+	five <span class="caps">EC2</span>&nbsp;instances!”
 
 Installation
 ------------
