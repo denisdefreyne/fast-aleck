@@ -32,7 +32,13 @@ Features
 * Optionally wraps `'` in a span with class `quo`
 * Optionally wraps `"` in a span with class `dquo`
 * Optionally replaces last significant whitespace in a block with a non-breaking space (Widon’t)
-* Optionally wraps SEQUENCES OF CAPITAL LETTERS in `<span class="caps">` so you can use small caps.
+* Optionally wraps sequences of capitals in `<span class="caps">` so you can use small caps.
+
+Example:
+
+	This... CANNOT be true--it's impossible! "I had five EC2 instances!"
+
+	This… <span class="caps">CANNOT</span> be true—it’s impossible! “I had five <span class="caps">EC2</span> instances!”
 
 Installation
 ------------
