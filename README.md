@@ -10,7 +10,7 @@ Fast Aleck is **alpha quality**. Expect things to break. If it breaks, please do
 How fast is it really?
 ----------------------
 
-Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced 5000 times (see ruby/bench.rb):
+Here are the results of a benchmark in which a copy of Alice's Adventures in Wonderland is typographically enhanced (see ruby/bench.rb):
 
 	                                   user     system      total        real
 	alice-rubypants (x10)         14.620000   0.470000  15.090000 ( 15.088082)
@@ -18,7 +18,9 @@ Here are the results of a benchmark in which a copy of Alice's Adventures in Won
 	alice-fast-aleck-all-options  36.110000   5.040000  41.150000 ( 42.310613)
 	alice-fast-aleck-no-options   12.880000   1.940000  14.820000 ( 14.932533)
 
-`no-options` has the same features as Rubypants, while `all-options` has the same features as Typogruby. Rubypants is executed 10x less, and Typogruby is executed 100x less. These benchmarks indicate that Fast Aleck in its current state is about one order of magnitude faster than Rubypants, and about two orders of magnitude faster than Typogruby.
+Fast Aleck runs 5000 times, Rubypants 500 times and Typogruby 50 times (hence the x10 and x100 indicators).
+
+`no-options` has the same features as Rubypants, while `all-options` has the same features as Typogruby. These benchmarks indicate that Fast Aleck in its current state is about one order of magnitude faster than Rubypants, and about two orders of magnitude faster than Typogruby.
 
 No development time has been spent on optimising Fast Aleck yet, but this will hopefully happen Soon™.
 
