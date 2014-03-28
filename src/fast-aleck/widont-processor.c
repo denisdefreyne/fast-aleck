@@ -15,6 +15,7 @@ static inline void fa_widont_processor_pass_on_token(fa_state *state, fa_token t
 // the _ quick X brown             quick X brown /
 // the _ quick X brown _           quick X brown _
 // the _ quick _ brown X fox       brown X fox   /
+// the _ quick _ brown X fox _     brown X fox   _
 
 static void fa_widont_processor_converter_handle_token(fa_state *state, fa_token token, bool blank) {
 	size_t len;
@@ -26,7 +27,8 @@ static void fa_widont_processor_converter_handle_token(fa_state *state, fa_token
 	}
 
 	// Pass on and shift when expectation is wrong
-	if (state->widont_processor_state.expect_word == blank) {
+	fa_widont_processor_state wps = state->widont_processor_state;
+	if (wps.expect_word == blank && !wps.expect_word) {
 		// pass on 1
 		len = state->widont_processor_state.words1.size;
 		for (size_t i = 0; i < len; ++i) {

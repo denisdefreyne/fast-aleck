@@ -575,12 +575,12 @@ int main(void) {
 
 	fast_aleck_test(&test_suite,
 		"<p>foo bar\n<br>\nbaz</p>",
-		"<p>foo bar\n<br>\nbaz</p>",
+		"<p>foo&nbsp;bar\n<br>\nbaz</p>",
 		fa_null_token);
 
 	fast_aleck_test(&test_suite,
 		"<p>foo bar </p>",
-		"<p>foo bar </p>",
+		"<p>foo&nbsp;bar </p>",
 		fa_null_token);
 
 	fast_aleck_test(&test_suite,
