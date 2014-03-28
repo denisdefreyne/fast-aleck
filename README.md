@@ -28,11 +28,11 @@ Features
 * '' → ‘’
 * "" → “”
 * Skips text inside `code`, `kbd`, `pre` and `script` elements
-* Optionally wraps `&amp;` in `<span class="amp">&amp;</span>` so you can pick the font with the prettiest ampersand
+* Optionally wraps `&amp;` in `<span class="amp">` so you can pick the font with the prettiest ampersand
 * Optionally wraps `'` in a span with class `quo`
 * Optionally wraps `"` in a span with class `dquo`
-* Widon't
-* class="caps" for multiple capital letters
+* Optionally replaces last significant whitespace in a block with a non-breaking space (Widon’t)
+* Optionally wraps SEQUENCES OF CAPITAL LETTERS in `<span class="caps">` so you can use small caps.
 
 Installation
 ------------
