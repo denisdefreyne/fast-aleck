@@ -1,11 +1,55 @@
 # Fast Aleck [![Build Status](https://secure.travis-ci.org/ddfreyne/fast-aleck.png)](http://travis-ci.org/ddfreyne/fast-aleck)
 
+**IMPORTANT: Fast Aleck is deprecated and no longer in development.** I stopped working on Fast Aleck for three reasons:
+
+1. Typographical enhancement is an intrinsically difficult task, and I believe it cannot be done reliably.
+
+2. I’ve never managed to get Fast Aleck to the point where it correctly handles all test cases, which I attribute to the same cause as point 1. It is also not as fast as I had hoped it to be (although with more work, this could be solved).
+
+3.  I don’t use any typographical enhancement tool anymore myself; I type the proper characters (smart quotes, em dashes, ellipses) manually. On OS X:
+
+    <table>
+		  <thead>
+			  <tr>
+				  <th>key combo</th>
+					<th>result</th>
+				</tr>
+			</head>
+			<tbody>
+			  <tr>
+				  <td>⌥ ;</td>
+					<td>…</td>
+				</tr>
+			  <tr>
+				  <td>⌥ ]</td>
+					<td>‘ (left single quotation mark)</td>
+				</tr>
+			  <tr>
+				  <td>⌥ ⇧ ]</td>
+					<td>’ (right single quotation mark)</td>
+				</tr>
+			  <tr>
+				  <td>⌥ [</td>
+					<td>“ (left double quotation mark)</td>
+				</tr>
+			  <tr>
+				  <td>⌥ ⇧ [</td>
+					<td>” (right double quotation mark)</td>
+				</tr>
+			  <tr>
+				  <td>⌥ -</td>
+					<td>– (en dash)</td>
+				</tr>
+			  <tr>
+				  <td>⌥ ⇧ -</td>
+					<td>— (em dash)</td>
+				</tr>
+			</tbody>
+		</table>
+
+* * *
+
 Fast Aleck is a tool for making text look smarter by using proper Unicode characters. For example, ... becomes … (`&hellip;`) and -- becomes — (`&mdash;`). Its goal is to be the fastest text cleaning tool out there. It is HTML-aware and also supports UTF-8.
-
-Status
-------
-
-Fast Aleck is **alpha quality**. Expect things to break. If it breaks, please do let me know! Crash reports and examples of incorrect output are *greatly* appreciated!
 
 How fast is it really?
 ----------------------
